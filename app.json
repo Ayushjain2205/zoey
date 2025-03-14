@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "@privy-io/expo-starter",
+    "slug": "expo-starter",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "usesAppleSignIn": true,
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.privy.example",
+      "associatedDomains": ["webcredentials:<your-associated-domain>"],
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "dev.privy.example"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "privyAppId": "cm89cz5fs01fzlpyu09q34q39",
+      "privyClientId": "client-WY5hrenukP6nWrKEgMAW4McwTKk71fzSMxHSmoVscQk1b",
+      "passkeyAssociatedDomain": "https://<your-associated-domain>"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-apple-authentication",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.5"
+          },
+          "android": {
+            "compileSdkVersion": 34
+          }
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
