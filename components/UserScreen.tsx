@@ -6,10 +6,7 @@ import {
   useEmbeddedEthereumWallet,
   getUserEmbeddedEthereumWallet,
   PrivyEmbeddedWalletProvider,
-  useLinkWithOAuth,
 } from "@privy-io/expo";
-import Constants from "expo-constants";
-import { useLinkWithPasskey } from "@privy-io/expo/passkey";
 import { PrivyUser } from "@privy-io/public-api";
 
 const toMainIdentifier = (x: PrivyUser["linked_accounts"][number]) => {
@@ -36,8 +33,7 @@ export const UserScreen = () => {
   const [signedMessages, setSignedMessages] = useState<string[]>([]);
 
   const { logout, user } = usePrivy();
-  const { linkWithPasskey } = useLinkWithPasskey();
-  const oauth = useLinkWithOAuth();
+
   const { wallets, create } = useEmbeddedEthereumWallet();
   const account = getUserEmbeddedEthereumWallet(user);
 
@@ -79,26 +75,6 @@ export const UserScreen = () => {
 
   return (
     <View>
-      <Button
-        title="Link Passkey"
-        onPress={() =>
-          linkWithPasskey({
-            relyingParty: Constants.expoConfig?.extra?.passkeyAssociatedDomain,
-          })
-        }
-      />
-      <View style={{ display: "flex", flexDirection: "column", margin: 10 }}>
-        {(["github", "google", "discord", "apple"] as const).map((provider) => (
-          <View key={provider}>
-            <Button
-              title={`Link ${provider}`}
-              disabled={oauth.state.status === "loading"}
-              onPress={() => oauth.link({ provider })}
-            ></Button>
-          </View>
-        ))}
-      </View>
-
       <ScrollView style={{ borderColor: "rgba(0,0,0,0.1)", borderWidth: 1 }}>
         <View
           style={{
@@ -136,7 +112,15 @@ export const UserScreen = () => {
           <View>
             {account?.address && (
               <>
-                <Text style={{ fontWeight: "bold" }}>Embedded Wallet</Text>
+                <Text
+                  style={{
+                    // fontWeight: "bold",
+                    fontFamily: "Rubik Doodle Shadow",
+                    fontSize: 20,
+                  }}
+                >
+                  Embedded Wallet
+                </Text>
                 <Text>{account?.address}</Text>
               </>
             )}
