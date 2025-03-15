@@ -7,11 +7,11 @@ import {
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
 import { SpaceGrotesk_400Regular } from "@expo-google-fonts/space-grotesk";
-import "@fontsource/rubik-doodle-shadow";
 import { useFonts } from "expo-font";
 import { scrollSepolia } from "viem/chains";
 import { useState, useEffect } from "react";
 import { View, Image, Text, Animated } from "react-native";
+import * as Font from "expo-font";
 
 const SplashScreen = () => {
   const fadeAnim = new Animated.Value(0);
@@ -36,6 +36,7 @@ const SplashScreen = () => {
       <Animated.View
         style={{
           opacity: fadeAnim,
+          alignItems: "center",
           transform: [
             {
               translateY: fadeAnim.interpolate({
@@ -46,43 +47,24 @@ const SplashScreen = () => {
           ],
         }}
       >
-        <View
+        <Image
+          source={require("../assets/images/zoey.png")}
           style={{
-            backgroundColor: "#ffffff",
-            padding: 20,
-            borderRadius: 12,
-            borderWidth: 3,
-            borderColor: "#000000",
-            shadowColor: "#000000",
-            shadowOffset: {
-              width: 5,
-              height: 5,
-            },
-            shadowOpacity: 1,
-            shadowRadius: 0,
-            elevation: 5,
+            width: 300,
+            height: 300,
+            marginBottom: 30,
+          }}
+        />
+        <Text
+          style={{
+            fontSize: 48,
+            textAlign: "center",
+            fontFamily: "RubikDoodleShadow",
+            color: "#000000",
           }}
         >
-          <Image
-            source={require("../assets/images/zoey.png")}
-            style={{
-              width: 200,
-              height: 200,
-              borderRadius: 8,
-            }}
-          />
-          <Text
-            style={{
-              marginTop: 20,
-              fontSize: 24,
-              fontWeight: "bold",
-              textAlign: "center",
-              fontFamily: "SpaceGrotesk_400Regular",
-            }}
-          >
-            Zoey
-          </Text>
-        </View>
+          Zoey
+        </Text>
       </Animated.View>
     </View>
   );
@@ -98,11 +80,25 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded) {
-      setTimeout(() => {
-        setIsReady(true);
-      }, 2000);
+    async function loadCustomFonts() {
+      try {
+        await Font.loadAsync({
+          RubikDoodleShadow: require("../assets/fonts/RubikDoodleShadow-Regular.ttf"),
+        });
+        if (fontsLoaded) {
+          setTimeout(() => {
+            setIsReady(true);
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("Error loading fonts:", error);
+        // Still set ready to true even if custom font fails
+        if (fontsLoaded) {
+          setIsReady(true);
+        }
+      }
     }
+    loadCustomFonts();
   }, [fontsLoaded]);
 
   if (!fontsLoaded || !isReady) {
