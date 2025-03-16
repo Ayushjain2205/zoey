@@ -28,33 +28,48 @@ export default function LoginScreen() {
           style={{
             width: screenWidth - 40,
             aspectRatio: 1,
-            backgroundColor: "#fff",
-            borderRadius: 12,
-            borderWidth: 3,
-            borderColor: "#000000",
-            shadowColor: "#000000",
-            shadowOffset: {
-              width: 5,
-              height: 5,
-            },
-            shadowOpacity: 1,
-            shadowRadius: 0,
-            elevation: 5,
-            overflow: "hidden",
+            position: "relative",
             marginBottom: 20,
           }}
         >
-          <Video
-            source={require("../assets/videos/splash.mp4")}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay
-            isLooping
+          {/* Shadow box */}
+          <View
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#000000",
+              borderRadius: 12,
+              top: 8,
+              left: 8,
+            }}
+          />
+          {/* Main container */}
+          <View
             style={{
               width: "100%",
               height: "100%",
+              backgroundColor: "#ffffff",
+              borderRadius: 12,
+              borderWidth: 3,
+              borderColor: "#000000",
+              overflow: "hidden",
+              position: "relative",
             }}
-          />
+          >
+            <Video
+              source={require("../assets/videos/splash.mp4")}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay
+              isLooping
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </View>
         </View>
+
         <Text
           style={{
             fontSize: 48,
@@ -64,7 +79,7 @@ export default function LoginScreen() {
             marginBottom: 40,
           }}
         >
-          ZOEY
+          I am Zoey!
         </Text>
       </View>
 
