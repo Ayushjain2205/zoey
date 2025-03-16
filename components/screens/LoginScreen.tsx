@@ -3,7 +3,7 @@ import { useLogin } from "@privy-io/expo";
 import { useState } from "react";
 import { Video, ResizeMode } from "expo-av";
 import { styled } from "nativewind";
-import { NeuButton } from "./NeuButton";
+import { NeuButton } from "../functional/NeuButton";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -25,7 +25,7 @@ export default function LoginScreen() {
           {/* Main container */}
           <StyledView className="w-full h-full bg-white rounded-xl border-2 border-black overflow-hidden relative">
             <StyledVideo
-              source={require("../assets/videos/splash.mp4")}
+              source={require("../../assets/videos/splash.mp4")}
               resizeMode={ResizeMode.COVER}
               shouldPlay
               isLooping

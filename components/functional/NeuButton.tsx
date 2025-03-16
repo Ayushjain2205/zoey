@@ -37,6 +37,14 @@ export const NeuButton = ({ onPress, children, width = "100%" }: NeuButtonProps)
             { translateY: 3 }
           ] : [],
           zIndex: 2,
+          shadowColor: "#000000",
+          shadowOffset: {
+            width: pressed ? 2 : 5,
+            height: pressed ? 2 : 5,
+          },
+          shadowOpacity: 1,
+          shadowRadius: 0,
+          elevation: pressed ? 2 : 5,
         })}
       >
         {children}

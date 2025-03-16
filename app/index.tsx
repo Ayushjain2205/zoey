@@ -1,9 +1,9 @@
 import { SafeAreaView, Text, View } from "react-native";
 import Constants from "expo-constants";
-import LoginScreen from "@/components/LoginScreen";
+import LoginScreen from "@/components/screens/LoginScreen";
 import { usePrivy } from "@privy-io/expo";
-import { UserScreen } from "@/components/UserScreen";
-import TestNativeWind from "@/components/TestNativeWind";
+import { UserScreen } from "@/components/screens/UserScreen";
+import TestNativeWind from "@/components/functional/TestNativeWind";
 
 export default function Index() {
   const { user } = usePrivy();
