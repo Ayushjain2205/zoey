@@ -2,8 +2,9 @@ import React from "react";
 import { View, Text, Image, Pressable } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import { NeuButton } from "../functional/NeuButton";
+import { router } from "expo-router";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -20,7 +21,7 @@ export const UserScreen = () => {
   ];
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={['top']}>
+    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
       <StyledView className="flex-1 px-4 pt-2">
         {/* Main Card */}
         <StyledView className="flex-1">
@@ -43,16 +44,20 @@ export const UserScreen = () => {
                     <StyledText className="font-space text-xs">5</StyledText>
                   </StyledView>
                 </StyledView>
-                
+
                 {/* Name and Level */}
                 <StyledView className="ml-3">
                   <StyledText className="font-doodle text-2xl">Zoey</StyledText>
                   <StyledView className="flex-row items-center mt-1">
                     <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl px-2 py-0.5 mr-2 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
-                      <StyledText className="font-space text-xs">✨ Level</StyledText>
+                      <StyledText className="font-space text-xs">
+                        ✨ Level
+                      </StyledText>
                     </StyledPressable>
                     <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl px-2 py-0.5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
-                      <StyledText className="font-space text-xs">Level Up</StyledText>
+                      <StyledText className="font-space text-xs">
+                        Level Up
+                      </StyledText>
                     </StyledPressable>
                   </StyledView>
                 </StyledView>
@@ -67,7 +72,10 @@ export const UserScreen = () => {
             {/* Attributes Section */}
             <StyledView className="flex-row flex-wrap justify-between">
               {attributes.map((attribute) => (
-                <StyledView key={attribute.name} className="w-[48%] mb-2 last:mb-0">
+                <StyledView
+                  key={attribute.name}
+                  className="w-[48%] mb-2 last:mb-0"
+                >
                   <StyledView className="flex-row justify-between">
                     <StyledText className="font-space text-xs">
                       {attribute.name}
@@ -77,7 +85,7 @@ export const UserScreen = () => {
                     </StyledText>
                   </StyledView>
                   <StyledView className="h-2 bg-white rounded-xl border-2 border-black overflow-hidden mt-0.5">
-                    <StyledView 
+                    <StyledView
                       className="h-full bg-[#FFB5C5] rounded-xl"
                       style={{ width: `${attribute.value}%` }}
                     />
@@ -95,7 +103,7 @@ export const UserScreen = () => {
             {[
               { name: "Shop", icon: "shopping-bag" },
               { name: "Memory", icon: "book" },
-              { name: "Wallet", icon: "credit-card" }
+              { name: "Wallet", icon: "credit-card" },
             ].map((item) => (
               <StyledPressable
                 key={item.name}
@@ -112,7 +120,11 @@ export const UserScreen = () => {
           </StyledView>
 
           {/* Talk To Me Button */}
-          <NeuButton onPress={() => {}} width="100%" color="#FFB5C5">
+          <NeuButton
+            onPress={() => router.push("/chat")}
+            width="100%"
+            color="#FFB5C5"
+          >
             <StyledView className="flex-row justify-center items-center px-4">
               <Feather name="message-circle" size={22} color="black" />
               <StyledText className="font-space text-lg ml-2">
