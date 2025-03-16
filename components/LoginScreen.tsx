@@ -1,117 +1,134 @@
-import { Button, Linking, Text, View } from "react-native";
-import {
-  LoginWithOAuthInput,
-  useLoginWithOAuth,
-  useLogin,
-} from "@privy-io/expo";
-import { useLoginWithPasskey } from "@privy-io/expo/passkey";
-import Constants from "expo-constants";
+import { Text, View, Pressable, Dimensions } from "react-native";
+import { useLogin } from "@privy-io/expo";
 import { useState } from "react";
-import * as Application from "expo-application";
+import { Video, ResizeMode } from "expo-av";
 
 export default function LoginScreen() {
   const [error, setError] = useState("");
-  const { loginWithPasskey } = useLoginWithPasskey({
-    onError: (err) => {
-      console.log(err);
-      setError(JSON.stringify(err.message));
-    },
-  });
   const { login } = useLogin();
-  const oauth = useLoginWithOAuth({
-    onError: (err) => {
-      console.log(err);
-      setError(JSON.stringify(err.message));
-    },
-  });
+  const screenWidth = Dimensions.get("window").width;
+
   return (
     <View
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 10,
-        marginHorizontal: 10,
+        backgroundColor: "#A7D2BC",
+        padding: 20,
       }}
     >
-      <Text>Privy App ID:</Text>
-      <Text style={{ fontSize: 10 }}>
-        {Constants.expoConfig?.extra?.privyAppId}
-      </Text>
-      <Text>Privy Client ID:</Text>
-      <Text style={{ fontSize: 10 }}>
-        {Constants.expoConfig?.extra?.privyClientId}
-      </Text>
-      <Text>
-        Navigate to your{" "}
-        <Text
-          onPress={() =>
-            Linking.openURL(
-              `https://dashboard.privy.io/apps/${Constants.expoConfig?.extra?.privyAppId}/settings?setting=clients`
-            )
-          }
-        >
-          dashboard
-        </Text>{" "}
-        and ensure the following Expo Application ID is listed as an `Allowed
-        app identifier`:
-      </Text>
-      <Text style={{ fontSize: 10 }}>{Application.applicationId}</Text>
-      <Text>
-        Navigate to your{" "}
-        <Text
-          onPress={() =>
-            Linking.openURL(
-              `https://dashboard.privy.io/apps/${Constants.expoConfig?.extra?.privyAppId}/settings?setting=clients`
-            )
-          }
-        >
-          dashboard
-        </Text>{" "}
-        and ensure the following value is listed as an `Allowed app URL scheme`:
-      </Text>
-      <Text style={{ fontSize: 10 }}>
-        {Application.applicationId === "host.exp.Exponent"
-          ? "exp"
-          : Constants.expoConfig?.scheme}
-      </Text>
-
-      <Button
-        title="Login with Privy UIs"
-        onPress={() => {
-          login({ loginMethods: ["email"] })
-            .then((session) => {
-              console.log("User logged in", session.user);
-            })
-            .catch((err) => {
-              setError(JSON.stringify(err.error) as string);
-            });
-        }}
-      />
-
-      <Button
-        title="Login using Passkey"
-        onPress={() =>
-          loginWithPasskey({
-            relyingParty: Constants.expoConfig?.extra?.passkeyAssociatedDomain,
-          })
-        }
-      />
-
+      {/* Video and Title Container */}
       <View
-        style={{ display: "flex", flexDirection: "column", gap: 5, margin: 10 }}
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        {["github", "google", "discord", "apple"].map((provider) => (
-          <View key={provider}>
-            <Button
-              title={`Login with ${provider}`}
-              disabled={oauth.state.status === "loading"}
-              onPress={() => oauth.login({ provider } as LoginWithOAuthInput)}
-            ></Button>
-          </View>
-        ))}
+        <View
+          style={{
+            width: screenWidth - 40,
+            aspectRatio: 1,
+            backgroundColor: "#fff",
+            borderRadius: 12,
+            borderWidth: 3,
+            borderColor: "#000000",
+            shadowColor: "#000000",
+            shadowOffset: {
+              width: 5,
+              height: 5,
+            },
+            shadowOpacity: 1,
+            shadowRadius: 0,
+            elevation: 5,
+            overflow: "hidden",
+            marginBottom: 20,
+          }}
+        >
+          <Video
+            source={require("../assets/videos/splash.mp4")}
+            resizeMode={ResizeMode.COVER}
+            shouldPlay
+            isLooping
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </View>
+        <Text
+          style={{
+            fontSize: 48,
+            fontFamily: "RubikDoodleShadow",
+            color: "#000000",
+            textAlign: "center",
+            marginBottom: 40,
+          }}
+        >
+          ZOEY
+        </Text>
       </View>
-      {error && <Text style={{ color: "red" }}>Error: {error}</Text>}
+
+      {/* Login Button Container */}
+      <View style={{ marginBottom: 40 }}>
+        <Pressable
+          onPress={() => {
+            login({ loginMethods: ["email"] })
+              .then((session) => {
+                console.log("User logged in", session.user);
+              })
+              .catch((err) => {
+                setError(JSON.stringify(err.error) as string);
+              });
+          }}
+          style={({ pressed }) => ({
+            backgroundColor: pressed ? "#e0e0e0" : "#ffffff",
+            paddingVertical: 15,
+            borderRadius: 12,
+            borderWidth: 3,
+            borderColor: "#000000",
+            shadowColor: "#000000",
+            shadowOffset: {
+              width: pressed ? 2 : 5,
+              height: pressed ? 2 : 5,
+            },
+            shadowOpacity: 1,
+            shadowRadius: 0,
+            elevation: pressed ? 2 : 5,
+            transform: [
+              {
+                translateX: pressed ? 3 : 0,
+              },
+              {
+                translateY: pressed ? 3 : 0,
+              },
+            ],
+            width: "100%",
+          })}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              fontFamily: "SpaceGrotesk_400Regular",
+              color: "#000000",
+              textAlign: "center",
+            }}
+          >
+            Login
+          </Text>
+        </Pressable>
+
+        {error && (
+          <Text
+            style={{
+              color: "red",
+              marginTop: 20,
+              fontFamily: "SpaceGrotesk_400Regular",
+            }}
+          >
+            Error: {error}
+          </Text>
+        )}
+      </View>
     </View>
   );
 }
