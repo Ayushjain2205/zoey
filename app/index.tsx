@@ -3,6 +3,7 @@ import Constants from "expo-constants";
 import LoginScreen from "@/components/LoginScreen";
 import { usePrivy } from "@privy-io/expo";
 import { UserScreen } from "@/components/UserScreen";
+import TestNativeWind from "@/components/TestNativeWind";
 
 export default function Index() {
   const { user } = usePrivy();
@@ -40,5 +41,5 @@ export default function Index() {
       </SafeAreaView>
     );
   }
-  return !user ? <LoginScreen /> : <UserScreen />;
+  return !user ? <TestNativeWind /> : <UserScreen />;
 }
