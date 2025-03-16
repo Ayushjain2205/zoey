@@ -101,12 +101,17 @@ export const UserScreen = () => {
           {/* Navigation Buttons */}
           <StyledView className="flex-row justify-between mb-3">
             {[
-              { name: "Shop", icon: "shopping-bag" },
-              { name: "Memory", icon: "book" },
-              { name: "Wallet", icon: "credit-card" },
+              { name: "Shop", icon: "shopping-bag", route: "/shop" as const },
+              { name: "Memory", icon: "book", route: "/memory" as const },
+              {
+                name: "Wallet",
+                icon: "credit-card",
+                route: "/wallet" as const,
+              },
             ].map((item) => (
               <StyledPressable
                 key={item.name}
+                onPress={() => router.push(item.route)}
                 className="bg-white border-2 border-black rounded-xl w-[31%] py-3 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
               >
                 <StyledView className="items-center">

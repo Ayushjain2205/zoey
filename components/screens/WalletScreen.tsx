@@ -1,5 +1,16 @@
 import React, { useState, useCallback } from "react";
-import { Text, TextInput, View, Button, ScrollView } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  Button,
+  ScrollView,
+  Pressable,
+} from "react-native";
+import { styled } from "nativewind";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 import {
   usePrivy,
@@ -8,6 +19,11 @@ import {
   PrivyEmbeddedWalletProvider,
 } from "@privy-io/expo";
 import { PrivyUser } from "@privy-io/public-api";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledPressable = styled(Pressable);
+const StyledSafeAreaView = styled(SafeAreaView);
 
 const toMainIdentifier = (x: PrivyUser["linked_accounts"][number]) => {
   if (x.type === "phone") {
@@ -28,7 +44,7 @@ const toMainIdentifier = (x: PrivyUser["linked_accounts"][number]) => {
   return x.type;
 };
 
-export const UserScreen = () => {
+export const WalletScreen = () => {
   const [chainId, setChainId] = useState("1");
   const [signedMessages, setSignedMessages] = useState<string[]>([]);
 
@@ -74,106 +90,26 @@ export const UserScreen = () => {
   }
 
   return (
-    <View>
-      <ScrollView style={{ borderColor: "rgba(0,0,0,0.1)", borderWidth: 1 }}>
-        <View
-          style={{
-            padding: 20,
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-          }}
-        >
-          <View>
-            <Text style={{ fontWeight: "bold" }}>User ID</Text>
-            <Text>{user.id}</Text>
-          </View>
+    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
+      <StyledView className="flex-1 px-4">
+        {/* Header with back button */}
+        <StyledView className="flex-row items-center py-4">
+          <StyledPressable
+            onPress={() => router.back()}
+            className="bg-white border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+          >
+            <Feather name="arrow-left" size={20} color="black" />
+          </StyledPressable>
+          <StyledText className="font-doodle text-2xl ml-4">Wallet</StyledText>
+        </StyledView>
 
-          <View>
-            <Text style={{ fontWeight: "bold" }}>Linked accounts</Text>
-            {user?.linked_accounts.length ? (
-              <View style={{ display: "flex", flexDirection: "column" }}>
-                {user?.linked_accounts?.map((m) => (
-                  <Text
-                    key={m.verified_at}
-                    style={{
-                      color: "rgba(0,0,0,0.5)",
-                      fontSize: 12,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {m.type}: {toMainIdentifier(m)}
-                  </Text>
-                ))}
-              </View>
-            ) : null}
-          </View>
-
-          <View>
-            {account?.address && (
-              <>
-                <Text
-                  style={{
-                    // fontWeight: "bold",
-                    fontFamily: "Rubik Doodle Shadow",
-                    fontSize: 20,
-                  }}
-                >
-                  Embedded Wallet
-                </Text>
-                <Text>{account?.address}</Text>
-              </>
-            )}
-
-            <Button title="Create Wallet" onPress={() => create()} />
-
-            <>
-              <Text>Chain ID to set to:</Text>
-              <TextInput
-                value={chainId}
-                onChangeText={setChainId}
-                placeholder="Chain Id"
-              />
-              <Button
-                title="Switch Chain"
-                onPress={async () =>
-                  switchChain(await wallets[0].getProvider(), chainId)
-                }
-              />
-            </>
-          </View>
-
-          <View style={{ display: "flex", flexDirection: "column" }}>
-            <Button
-              title="Sign Message"
-              onPress={async () => signMessage(await wallets[0].getProvider())}
-            />
-
-            <Text>Messages signed:</Text>
-            {signedMessages.map((m) => (
-              <React.Fragment key={m}>
-                <Text
-                  style={{
-                    color: "rgba(0,0,0,0.5)",
-                    fontSize: 12,
-                    fontStyle: "italic",
-                  }}
-                >
-                  {m}
-                </Text>
-                <View
-                  style={{
-                    marginVertical: 5,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "rgba(0,0,0,0.2)",
-                  }}
-                />
-              </React.Fragment>
-            ))}
-          </View>
-          <Button title="Logout" onPress={logout} />
-        </View>
-      </ScrollView>
-    </View>
+        {/* Wallet content */}
+        <StyledView className="flex-1 bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+          <StyledText className="font-space text-center text-gray-500">
+            Coming soon: Manage your coins and rewards!
+          </StyledText>
+        </StyledView>
+      </StyledView>
+    </StyledSafeAreaView>
   );
 };
