@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from '@expo/vector-icons';
+import { NeuButton } from "../functional/NeuButton";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -111,14 +112,14 @@ export const UserScreen = () => {
           </StyledView>
 
           {/* Talk To Me Button */}
-          <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl py-3 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
+          <NeuButton onPress={() => {}} width="100%" color="#FFB5C5">
             <StyledView className="flex-row justify-center items-center px-4">
               <Feather name="message-circle" size={22} color="black" />
               <StyledText className="font-space text-lg ml-2">
                 Talk to Me
               </StyledText>
             </StyledView>
-          </StyledPressable>
+          </NeuButton>
         </StyledView>
       </StyledView>
     </StyledSafeAreaView>

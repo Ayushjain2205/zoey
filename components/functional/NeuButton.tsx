@@ -4,9 +4,10 @@ interface NeuButtonProps {
   onPress: () => void;
   children: React.ReactNode;
   width?: DimensionValue;
+  color?: string;
 }
 
-export const NeuButton = ({ onPress, children, width = "100%" }: NeuButtonProps) => {
+export const NeuButton = ({ onPress, children, width = "100%", color = "#ffffff" }: NeuButtonProps) => {
   return (
     <View style={{ position: "relative", width }}>
       {/* Shadow Element */}
@@ -26,7 +27,7 @@ export const NeuButton = ({ onPress, children, width = "100%" }: NeuButtonProps)
       <Pressable
         onPress={onPress}
         style={({ pressed }) => ({
-          backgroundColor: "#ffffff",
+          backgroundColor: color,
           paddingVertical: 16,
           paddingHorizontal: 16,
           borderRadius: 12,
