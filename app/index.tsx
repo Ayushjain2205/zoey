@@ -41,5 +41,5 @@ export default function Index() {
       </SafeAreaView>
     );
   }
-  return !user ? <TestNativeWind /> : <UserScreen />;
+  return !user ? <LoginScreen /> : <UserScreen />;
 }

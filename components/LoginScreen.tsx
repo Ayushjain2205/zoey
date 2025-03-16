@@ -2,6 +2,13 @@ import { Text, View, Pressable, Dimensions } from "react-native";
 import { useLogin } from "@privy-io/expo";
 import { useState } from "react";
 import { Video, ResizeMode } from "expo-av";
+import { styled } from "nativewind";
+import { NeuButton } from "./NeuButton";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledPressable = styled(Pressable);
+const StyledVideo = styled(Video);
 
 export default function LoginScreen() {
   const [error, setError] = useState("");
@@ -9,83 +16,32 @@ export default function LoginScreen() {
   const screenWidth = Dimensions.get("window").width;
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#A7D2BC",
-        padding: 20,
-      }}
-    >
+    <StyledView className="flex-1 bg-[#A7D2BC] p-5">
       {/* Video and Title Container */}
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <View
-          style={{
-            width: screenWidth - 40,
-            aspectRatio: 1,
-            position: "relative",
-            marginBottom: 20,
-          }}
-        >
+      <StyledView className="flex-1 items-center justify-center">
+        <StyledView className="relative mb-5" style={{ width: screenWidth - 40, aspectRatio: 1 }}>
           {/* Shadow box */}
-          <View
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              backgroundColor: "#000000",
-              borderRadius: 12,
-              top: 8,
-              left: 8,
-            }}
-          />
+          <StyledView className="absolute w-full h-full bg-black rounded-xl top-2 left-2" />
           {/* Main container */}
-          <View
-            style={{
-              width: "100%",
-              height: "100%",
-              backgroundColor: "#ffffff",
-              borderRadius: 12,
-              borderWidth: 3,
-              borderColor: "#000000",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            <Video
+          <StyledView className="w-full h-full bg-white rounded-xl border-2 border-black overflow-hidden relative">
+            <StyledVideo
               source={require("../assets/videos/splash.mp4")}
               resizeMode={ResizeMode.COVER}
               shouldPlay
               isLooping
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
+              className="w-full h-full"
             />
-          </View>
-        </View>
+          </StyledView>
+        </StyledView>
 
-        <Text
-          style={{
-            fontSize: 48,
-            fontFamily: "RubikDoodleShadow",
-            color: "#000000",
-            textAlign: "center",
-            marginBottom: 40,
-          }}
-        >
+        <StyledText className="text-5xl font-[RubikDoodleShadow] text-black text-center mb-10">
           I am Zoey!
-        </Text>
-      </View>
+        </StyledText>
+      </StyledView>
 
       {/* Login Button Container */}
-      <View style={{ marginBottom: 40 }}>
-        <Pressable
+      <StyledView className="mb-10">
+        <NeuButton
           onPress={() => {
             login({ loginMethods: ["email"] })
               .then((session) => {
@@ -95,55 +51,23 @@ export default function LoginScreen() {
                 setError(JSON.stringify(err.error) as string);
               });
           }}
-          style={({ pressed }) => ({
-            backgroundColor: pressed ? "#e0e0e0" : "#ffffff",
-            paddingVertical: 15,
-            borderRadius: 12,
-            borderWidth: 3,
-            borderColor: "#000000",
-            shadowColor: "#000000",
-            shadowOffset: {
-              width: pressed ? 2 : 5,
-              height: pressed ? 2 : 5,
-            },
-            shadowOpacity: 1,
-            shadowRadius: 0,
-            elevation: pressed ? 2 : 5,
-            transform: [
-              {
-                translateX: pressed ? 3 : 0,
-              },
-              {
-                translateY: pressed ? 3 : 0,
-              },
-            ],
-            width: "100%",
-          })}
         >
-          <Text
-            style={{
-              fontSize: 24,
-              fontFamily: "SpaceGrotesk_400Regular",
-              color: "#000000",
-              textAlign: "center",
-            }}
-          >
+          <Text style={{ 
+            fontFamily: 'SpaceGrotesk_400Regular',
+            fontSize: 24,
+            color: '#000000',
+            textAlign: 'center',
+          }}>
             Login
           </Text>
-        </Pressable>
+        </NeuButton>
 
         {error && (
-          <Text
-            style={{
-              color: "red",
-              marginTop: 20,
-              fontFamily: "SpaceGrotesk_400Regular",
-            }}
-          >
+          <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-red-500 mt-5">
             Error: {error}
-          </Text>
+          </StyledText>
         )}
-      </View>
-    </View>
+      </StyledView>
+    </StyledView>
   );
 }

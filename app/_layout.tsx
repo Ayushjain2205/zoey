@@ -12,6 +12,12 @@ import { scrollSepolia } from "viem/chains";
 import { useState, useEffect } from "react";
 import { View, Image, Text, Animated } from "react-native";
 import * as Font from "expo-font";
+import { styled } from "nativewind";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledImage = styled(Image);
+const StyledAnimatedView = styled(Animated.View);
 
 const SplashScreen = () => {
   const fadeAnim = new Animated.Value(0);
@@ -25,18 +31,10 @@ const SplashScreen = () => {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#F6F1F1",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Animated.View
+    <StyledView className="flex-1 bg-[#F6F1F1] items-center justify-center">
+      <StyledAnimatedView
         style={{
           opacity: fadeAnim,
-          alignItems: "center",
           transform: [
             {
               translateY: fadeAnim.interpolate({
@@ -46,62 +44,39 @@ const SplashScreen = () => {
             },
           ],
         }}
+        className="items-center"
       >
-        <Image
+        <StyledImage
           source={require("../assets/images/zoey.png")}
-          style={{
-            width: 300,
-            height: 300,
-            marginBottom: 30,
-          }}
+          className="w-[300px] h-[300px] mb-8"
         />
-        <Text
-          style={{
-            fontSize: 48,
-            textAlign: "center",
-            fontFamily: "RubikDoodleShadow",
-            color: "#000000",
-          }}
-        >
+        <StyledText className="text-5xl text-center font-[RubikDoodleShadow] text-black">
           Zoey
-        </Text>
-      </Animated.View>
-    </View>
+        </StyledText>
+      </StyledAnimatedView>
+    </StyledView>
   );
 };
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
     SpaceGrotesk_400Regular,
+    RubikDoodleShadow: require("../assets/fonts/RubikDoodleShadow-Regular.ttf"),
   });
 
   useEffect(() => {
-    async function loadCustomFonts() {
-      try {
-        await Font.loadAsync({
-          RubikDoodleShadow: require("../assets/fonts/RubikDoodleShadow-Regular.ttf"),
-        });
-        if (fontsLoaded) {
-          setTimeout(() => {
-            setIsReady(true);
-          }, 2000);
-        }
-      } catch (error) {
-        console.error("Error loading fonts:", error);
-        // Still set ready to true even if custom font fails
-        if (fontsLoaded) {
-          setIsReady(true);
-        }
-      }
+    if (fontsLoaded || fontError) {
+      setTimeout(() => {
+        setIsReady(true);
+      }, 2000);
     }
-    loadCustomFonts();
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded || !isReady) {
+  if (!isReady) {
     return <SplashScreen />;
   }
 
