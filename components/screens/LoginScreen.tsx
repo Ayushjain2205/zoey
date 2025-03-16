@@ -1,6 +1,6 @@
 import { Text, View, Pressable, Dimensions } from "react-native";
 import { useLogin } from "@privy-io/expo";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Video, ResizeMode } from "expo-av";
 import { styled } from "nativewind";
 import { NeuButton } from "../functional/NeuButton";
@@ -9,6 +9,32 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledPressable = styled(Pressable);
 const StyledVideo = styled(Video);
+
+const TypewriterText = ({ text, delay = 50 }: { text: string; delay?: number }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex]);
+        setCurrentIndex(c => c + 1);
+      }, delay);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, delay, text]);
+
+  return (
+    <StyledView className="min-h-[64px] w-[90%] justify-center">
+      <StyledText 
+        style={{ fontFamily: 'SpaceGrotesk_400Regular' }}
+        className="text-2xl text-black text-center leading-8"
+      >
+        {displayText}
+      </StyledText>
+    </StyledView>
+  );
+};
 
 export default function LoginScreen() {
   const [error, setError] = useState("");
@@ -41,9 +67,7 @@ export default function LoginScreen() {
           </StyledView>
         </StyledView>
 
-        <StyledText className="text-5xl font-[RubikDoodleShadow] text-black text-center mb-10">
-          I am Zoey!
-        </StyledText>
+        <TypewriterText text="Hey! I am Zoey. Lets begin a fun adventure!" />
       </StyledView>
 
       {/* Login Button Container */}
