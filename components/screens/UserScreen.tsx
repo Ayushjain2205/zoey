@@ -1,179 +1,120 @@
-import React, { useState, useCallback } from "react";
-import { Text, TextInput, View, Button, ScrollView } from "react-native";
+import React from "react";
+import { View, Text, Image, Pressable } from "react-native";
+import { styled } from "nativewind";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from '@expo/vector-icons';
 
-import {
-  usePrivy,
-  useEmbeddedEthereumWallet,
-  getUserEmbeddedEthereumWallet,
-  PrivyEmbeddedWalletProvider,
-} from "@privy-io/expo";
-import { PrivyUser } from "@privy-io/public-api";
-
-const toMainIdentifier = (x: PrivyUser["linked_accounts"][number]) => {
-  if (x.type === "phone") {
-    return x.phoneNumber;
-  }
-  if (x.type === "email" || x.type === "wallet") {
-    return x.address;
-  }
-
-  if (x.type === "twitter_oauth" || x.type === "tiktok_oauth") {
-    return x.username;
-  }
-
-  if (x.type === "custom_auth") {
-    return x.custom_user_id;
-  }
-
-  return x.type;
-};
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledPressable = styled(Pressable);
+const StyledSafeAreaView = styled(SafeAreaView);
+const StyledImage = styled(Image);
 
 export const UserScreen = () => {
-  const [chainId, setChainId] = useState("1");
-  const [signedMessages, setSignedMessages] = useState<string[]>([]);
-
-  const { logout, user } = usePrivy();
-
-  const { wallets, create } = useEmbeddedEthereumWallet();
-  const account = getUserEmbeddedEthereumWallet(user);
-
-  const signMessage = useCallback(
-    async (provider: PrivyEmbeddedWalletProvider) => {
-      try {
-        const message = await provider.request({
-          method: "personal_sign",
-          params: [`0x0${Date.now()}`, account?.address],
-        });
-        if (message) {
-          setSignedMessages((prev) => prev.concat(message));
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    [account?.address]
-  );
-
-  const switchChain = useCallback(
-    async (provider: PrivyEmbeddedWalletProvider, id: string) => {
-      try {
-        await provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: id }],
-        });
-        alert(`Chain switched to ${id} successfully`);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    [account?.address]
-  );
-
-  if (!user) {
-    return null;
-  }
+  const attributes = [
+    { name: "Empathy", value: 85 },
+    { name: "Wisdom", value: 68 },
+    { name: "Energy", value: 92 },
+    { name: "Creativity", value: 78 },
+  ];
 
   return (
-    <View>
-      <ScrollView style={{ borderColor: "rgba(0,0,0,0.1)", borderWidth: 1 }}>
-        <View
-          style={{
-            padding: 20,
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-          }}
-        >
-          <View>
-            <Text style={{ fontWeight: "bold" }}>User ID</Text>
-            <Text>{user.id}</Text>
-          </View>
+    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]">
+      <StyledView className="flex-1 px-4 pt-2">
+        {/* Main Card */}
+        <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+          {/* Header Section */}
+          <StyledView className="flex-row items-center justify-between mb-8">
+            {/* Profile and Level */}
+            <StyledView className="flex-row items-center">
+              {/* Profile Image */}
+              <StyledView className="relative">
+                <StyledView className="w-16 h-16 border-2 border-black rounded-full overflow-hidden">
+                  <StyledImage
+                    source={require("../../assets/images/zoey.png")}
+                    className="w-full h-full"
+                    style={{ borderRadius: 9999 }}
+                    resizeMode="cover"
+                  />
+                </StyledView>
+                <StyledView className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#FFB5C5] border-2 border-black rounded-full items-center justify-center">
+                  <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>5</StyledText>
+                </StyledView>
+              </StyledView>
+              
+              {/* Name and Level */}
+              <StyledView className="ml-3">
+                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-xl mb-1">Zoey</StyledText>
+                <StyledView className="flex-row items-center">
+                  <StyledView className="bg-[#FFB5C5] border-2 border-black rounded-xl px-3 py-1 mr-2">
+                    <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>✨ Level 5</StyledText>
+                  </StyledView>
+                  <StyledView className="bg-[#FFB5C5] border-2 border-black rounded-xl px-3 py-1">
+                    <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>Level Up</StyledText>
+                  </StyledView>
+                </StyledView>
+              </StyledView>
+            </StyledView>
 
-          <View>
-            <Text style={{ fontWeight: "bold" }}>Linked accounts</Text>
-            {user?.linked_accounts.length ? (
-              <View style={{ display: "flex", flexDirection: "column" }}>
-                {user?.linked_accounts?.map((m) => (
-                  <Text
-                    key={m.verified_at}
-                    style={{
-                      color: "rgba(0,0,0,0.5)",
-                      fontSize: 12,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {m.type}: {toMainIdentifier(m)}
-                  </Text>
-                ))}
-              </View>
-            ) : null}
-          </View>
+            {/* Coins */}
+            <StyledView className="bg-[#FFB5C5] border-2 border-black rounded-xl px-4 py-2 flex-row items-center">
+              <View className="w-4 h-4 bg-yellow-400 rounded-full mr-2 border border-black" />
+              <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>1250</StyledText>
+            </StyledView>
+          </StyledView>
 
-          <View>
-            {account?.address && (
-              <>
-                <Text
-                  style={{
-                    // fontWeight: "bold",
-                    fontFamily: "Rubik Doodle Shadow",
-                    fontSize: 20,
-                  }}
-                >
-                  Embedded Wallet
-                </Text>
-                <Text>{account?.address}</Text>
-              </>
-            )}
-
-            <Button title="Create Wallet" onPress={() => create()} />
-
-            <>
-              <Text>Chain ID to set to:</Text>
-              <TextInput
-                value={chainId}
-                onChangeText={setChainId}
-                placeholder="Chain Id"
-              />
-              <Button
-                title="Switch Chain"
-                onPress={async () =>
-                  switchChain(await wallets[0].getProvider(), chainId)
-                }
-              />
-            </>
-          </View>
-
-          <View style={{ display: "flex", flexDirection: "column" }}>
-            <Button
-              title="Sign Message"
-              onPress={async () => signMessage(await wallets[0].getProvider())}
-            />
-
-            <Text>Messages signed:</Text>
-            {signedMessages.map((m) => (
-              <React.Fragment key={m}>
-                <Text
-                  style={{
-                    color: "rgba(0,0,0,0.5)",
-                    fontSize: 12,
-                    fontStyle: "italic",
-                  }}
-                >
-                  {m}
-                </Text>
-                <View
-                  style={{
-                    marginVertical: 5,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "rgba(0,0,0,0.2)",
-                  }}
+          {/* Attributes Section */}
+          {attributes.map((attribute) => (
+            <StyledView key={attribute.name} className="mb-4 last:mb-0">
+              <StyledView className="flex-row justify-between mb-1">
+                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-lg">
+                  {attribute.name}
+                </StyledText>
+                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-lg">
+                  {attribute.value}/100
+                </StyledText>
+              </StyledView>
+              <StyledView className="h-5 bg-white rounded-xl border-2 border-black overflow-hidden">
+                <StyledView 
+                  className="h-full bg-[#FFB5C5] rounded-xl"
+                  style={{ width: `${attribute.value}%` }}
                 />
-              </React.Fragment>
-            ))}
-          </View>
-          <Button title="Logout" onPress={logout} />
-        </View>
-      </ScrollView>
-    </View>
+              </StyledView>
+            </StyledView>
+          ))}
+        </StyledView>
+
+        {/* Navigation Buttons */}
+        <StyledView className="flex-row justify-between my-4">
+          {[
+            { name: "Shop", icon: "shopping-bag" },
+            { name: "Memory", icon: "book" },
+            { name: "Wallet", icon: "credit-card" }
+          ].map((item) => (
+            <StyledPressable
+              key={item.name}
+              className="bg-white border-2 border-black rounded-xl w-[31%] py-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
+            >
+              <StyledView className="items-center">
+                <Feather name={item.icon as any} size={24} color="#FFB5C5" />
+                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="mt-2">
+                  {item.name}
+                </StyledText>
+              </StyledView>
+            </StyledPressable>
+          ))}
+        </StyledView>
+
+        {/* Talk To Me Button */}
+        <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
+          <StyledView className="flex-row justify-center items-center">
+            <Feather name="message-circle" size={24} color="black" />
+            <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-xl ml-2">
+              Talk to Me
+            </StyledText>
+          </StyledView>
+        </StyledPressable>
+      </StyledView>
+    </StyledSafeAreaView>
   );
 };
