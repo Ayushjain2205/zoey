@@ -24,12 +24,12 @@ export const UserScreen = () => {
         {/* Main Card */}
         <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
           {/* Header Section */}
-          <StyledView className="flex-row items-center justify-between mb-8">
+          <StyledView className="flex-row items-center justify-between mb-4">
             {/* Profile and Level */}
             <StyledView className="flex-row items-center">
               {/* Profile Image */}
               <StyledView className="relative">
-                <StyledView className="w-16 h-16 border-2 border-black rounded-full overflow-hidden">
+                <StyledView className="w-20 h-20 border-2 border-black rounded-full overflow-hidden shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
                   <StyledImage
                     source={require("../../assets/images/zoey.png")}
                     className="w-full h-full"
@@ -37,55 +37,56 @@ export const UserScreen = () => {
                     resizeMode="cover"
                   />
                 </StyledView>
-                <StyledView className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#FFB5C5] border-2 border-black rounded-full items-center justify-center">
-                  <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>5</StyledText>
+                <StyledView className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#FFB5C5] border-2 border-black rounded-full items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <StyledText className="font-space text-xs">5</StyledText>
                 </StyledView>
               </StyledView>
               
               {/* Name and Level */}
               <StyledView className="ml-3">
-                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-xl mb-1">Zoey</StyledText>
-                <StyledView className="flex-row items-center">
-                  <StyledView className="bg-[#FFB5C5] border-2 border-black rounded-xl px-3 py-1 mr-2">
-                    <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>✨ Level 5</StyledText>
-                  </StyledView>
-                  <StyledView className="bg-[#FFB5C5] border-2 border-black rounded-xl px-3 py-1">
-                    <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>Level Up</StyledText>
-                  </StyledView>
+                <StyledText className="font-doodle text-2xl">Zoey</StyledText>
+                <StyledView className="flex-row items-center mt-1">
+                  <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl px-2 py-0.5 mr-2 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
+                    <StyledText className="font-space text-xs">✨ Level</StyledText>
+                  </StyledPressable>
+                  <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl px-2 py-0.5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
+                    <StyledText className="font-space text-xs">Level Up</StyledText>
+                  </StyledPressable>
                 </StyledView>
               </StyledView>
             </StyledView>
 
             {/* Coins */}
-            <StyledView className="bg-[#FFB5C5] border-2 border-black rounded-xl px-4 py-2 flex-row items-center">
-              <View className="w-4 h-4 bg-yellow-400 rounded-full mr-2 border border-black" />
-              <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }}>1250</StyledText>
-            </StyledView>
+            <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
+              <StyledView className="w-3.5 h-3.5 bg-yellow-400 rounded-full border border-black" />
+            </StyledPressable>
           </StyledView>
 
           {/* Attributes Section */}
-          {attributes.map((attribute) => (
-            <StyledView key={attribute.name} className="mb-4 last:mb-0">
-              <StyledView className="flex-row justify-between mb-1">
-                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-lg">
-                  {attribute.name}
-                </StyledText>
-                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-lg">
-                  {attribute.value}/100
-                </StyledText>
+          <StyledView className="flex-row flex-wrap justify-between">
+            {attributes.map((attribute) => (
+              <StyledView key={attribute.name} className="w-[48%] mb-2 last:mb-0">
+                <StyledView className="flex-row justify-between">
+                  <StyledText className="font-space text-xs">
+                    {attribute.name}
+                  </StyledText>
+                  <StyledText className="font-space text-xs">
+                    {attribute.value}
+                  </StyledText>
+                </StyledView>
+                <StyledView className="h-2 bg-white rounded-xl border-2 border-black overflow-hidden mt-0.5">
+                  <StyledView 
+                    className="h-full bg-[#FFB5C5] rounded-xl"
+                    style={{ width: `${attribute.value}%` }}
+                  />
+                </StyledView>
               </StyledView>
-              <StyledView className="h-5 bg-white rounded-xl border-2 border-black overflow-hidden">
-                <StyledView 
-                  className="h-full bg-[#FFB5C5] rounded-xl"
-                  style={{ width: `${attribute.value}%` }}
-                />
-              </StyledView>
-            </StyledView>
-          ))}
+            ))}
+          </StyledView>
         </StyledView>
 
         {/* Navigation Buttons */}
-        <StyledView className="flex-row justify-between my-4">
+        <StyledView className="flex-row justify-between my-3">
           {[
             { name: "Shop", icon: "shopping-bag" },
             { name: "Memory", icon: "book" },
@@ -93,11 +94,11 @@ export const UserScreen = () => {
           ].map((item) => (
             <StyledPressable
               key={item.name}
-              className="bg-white border-2 border-black rounded-xl w-[31%] py-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
+              className="bg-white border-2 border-black rounded-xl w-[31%] py-3 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
             >
               <StyledView className="items-center">
-                <Feather name={item.icon as any} size={24} color="#FFB5C5" />
-                <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="mt-2">
+                <Feather name={item.icon as any} size={22} color="#FFB5C5" />
+                <StyledText className="font-space mt-1 text-sm">
                   {item.name}
                 </StyledText>
               </StyledView>
@@ -106,10 +107,10 @@ export const UserScreen = () => {
         </StyledView>
 
         {/* Talk To Me Button */}
-        <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
+        <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl py-3 px-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
           <StyledView className="flex-row justify-center items-center">
-            <Feather name="message-circle" size={24} color="black" />
-            <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-xl ml-2">
+            <Feather name="message-circle" size={22} color="black" />
+            <StyledText className="font-space text-lg ml-2">
               Talk to Me
             </StyledText>
           </StyledView>

@@ -7,8 +7,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['SpaceGrotesk_400Regular', 'sans-serif'],
-        'heading': ['RubikDoodleShadow', 'sans-serif'],
+        'space': 'SpaceGrotesk_400Regular',
+        'doodle': 'RubikDoodleShadow',
       },
     },
   },
