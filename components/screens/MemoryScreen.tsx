@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import * as DocumentPicker from "expo-document-picker";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -16,6 +17,47 @@ type TabType = "files" | "apps";
 export const MemoryScreen = () => {
   const { currentTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>("files");
+  const [recentFiles, setRecentFiles] = useState([
+    {
+      id: "1",
+      name: "Meeting Notes",
+      type: "text",
+      lastEdited: "2h ago",
+    },
+    {
+      id: "2",
+      name: "Project Screenshots",
+      type: "image",
+      lastEdited: "1d ago",
+    },
+  ]);
+
+  const handleFileUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "*/*", // Allow all file types
+        multiple: false, // Allow only single file selection
+      });
+
+      if (result.canceled) {
+        return;
+      }
+
+      const file = result.assets[0];
+
+      // Add the new file to recent files
+      const newFile = {
+        id: Date.now().toString(),
+        name: file.name,
+        type: file.mimeType?.includes("image") ? "image" : "text",
+        lastEdited: "Just now",
+      };
+
+      setRecentFiles((prevFiles) => [newFile, ...prevFiles]);
+    } catch (error) {
+      console.error("Error picking document:", error);
+    }
+  };
 
   return (
     <StyledSafeAreaView
@@ -71,41 +113,31 @@ export const MemoryScreen = () => {
                   Recent Files
                 </StyledText>
                 <StyledView className="space-y-3">
-                  {/* File Card */}
-                  <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-                    <StyledView className="flex-row items-center">
-                      <StyledView className="w-12 h-12 bg-gray-100 rounded-lg items-center justify-center mr-4">
-                        <Feather name="file-text" size={24} color="black" />
+                  {recentFiles.map((file) => (
+                    <StyledView
+                      key={file.id}
+                      className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
+                    >
+                      <StyledView className="flex-row items-center">
+                        <StyledView className="w-12 h-12 bg-gray-100 rounded-lg items-center justify-center mr-4">
+                          <Feather
+                            name={file.type === "image" ? "image" : "file-text"}
+                            size={24}
+                            color="black"
+                          />
+                        </StyledView>
+                        <StyledView className="flex-1">
+                          <StyledText className="font-space text-base">
+                            {file.name}
+                          </StyledText>
+                          <StyledText className="font-space text-sm text-gray-500">
+                            Last edited {file.lastEdited}
+                          </StyledText>
+                        </StyledView>
+                        <Feather name="chevron-right" size={20} color="black" />
                       </StyledView>
-                      <StyledView className="flex-1">
-                        <StyledText className="font-space text-base">
-                          Meeting Notes
-                        </StyledText>
-                        <StyledText className="font-space text-sm text-gray-500">
-                          Last edited 2h ago
-                        </StyledText>
-                      </StyledView>
-                      <Feather name="chevron-right" size={20} color="black" />
                     </StyledView>
-                  </StyledView>
-
-                  {/* Another File Card */}
-                  <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-                    <StyledView className="flex-row items-center">
-                      <StyledView className="w-12 h-12 bg-gray-100 rounded-lg items-center justify-center mr-4">
-                        <Feather name="image" size={24} color="black" />
-                      </StyledView>
-                      <StyledView className="flex-1">
-                        <StyledText className="font-space text-base">
-                          Project Screenshots
-                        </StyledText>
-                        <StyledText className="font-space text-sm text-gray-500">
-                          Last edited 1d ago
-                        </StyledText>
-                      </StyledView>
-                      <Feather name="chevron-right" size={20} color="black" />
-                    </StyledView>
-                  </StyledView>
+                  ))}
                 </StyledView>
               </StyledView>
             </StyledView>
@@ -223,7 +255,7 @@ export const MemoryScreen = () => {
           <StyledView className="absolute bottom-6 right-4 space-y-4">
             {/* Upload FAB */}
             <StyledPressable
-              onPress={() => {}}
+              onPress={handleFileUpload}
               className="w-14 h-14 bg-white border-2 border-black rounded-full items-center justify-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
               style={{ backgroundColor: currentTheme.main }}
             >
