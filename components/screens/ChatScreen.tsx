@@ -26,6 +26,40 @@ const StyledImage = styled(Image);
 
 type ChatMode = "BFF" | "COACH" | "MANAGER" | "GF" | "SHOPPER";
 
+interface ThemeColors {
+  main: string;
+  light: string;
+  lighter: string;
+}
+
+const modeColors: Record<string, ThemeColors> = {
+  BFF: {
+    main: "#E0B3FF",
+    light: "#F0E5FF",
+    lighter: "#F8F5FF",
+  },
+  MANAGER: {
+    main: "#BAFFC9",
+    light: "#E5FFE9",
+    lighter: "#F5FFF7",
+  },
+  COACH: {
+    main: "#BAE1FF",
+    light: "#E5F4FF",
+    lighter: "#F5FAFF",
+  },
+  SHOPPER: {
+    main: "#FFFFBA",
+    light: "#FFFFE5",
+    lighter: "#FFFFF5",
+  },
+  GF: {
+    main: "#FFB3BA",
+    light: "#FFE5E8",
+    lighter: "#FFF5F7",
+  },
+};
+
 interface ChatModeConfig {
   name: ChatMode;
   image: any;
@@ -36,27 +70,27 @@ const CHAT_MODES: ChatModeConfig[] = [
   {
     name: "BFF",
     image: require("../../assets/images/zoey.png"),
-    color: "#FFB5C5",
+    color: modeColors.BFF.main,
   },
   {
     name: "COACH",
     image: require("../../assets/images/zoey_coach.png"),
-    color: "#90EE90",
+    color: modeColors.COACH.main,
   },
   {
     name: "MANAGER",
     image: require("../../assets/images/zoey_manager.png"),
-    color: "#87CEEB",
+    color: modeColors.MANAGER.main,
   },
   {
     name: "GF",
     image: require("../../assets/images/zoey_gf.png"),
-    color: "#FFB6C1",
+    color: modeColors.GF.main,
   },
   {
     name: "SHOPPER",
     image: require("../../assets/images/zoey_shopper.png"),
-    color: "#DDA0DD",
+    color: modeColors.SHOPPER.main,
   },
 ];
 
@@ -83,6 +117,8 @@ export const ChatScreen = () => {
   );
   const [isModePickerVisible, setIsModePickerVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const currentTheme = modeColors[selectedMode.name];
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -185,7 +221,7 @@ export const ChatScreen = () => {
               <StyledPressable
                 key={mode.name}
                 className={`flex-row items-center p-4 border-b-2 border-black last:border-b-0 active:opacity-70`}
-                style={{ backgroundColor: mode.color }}
+                style={{ backgroundColor: modeColors[mode.name].main }}
                 onPress={() => {
                   setSelectedMode(mode);
                   setIsModePickerVisible(false);
@@ -207,7 +243,10 @@ export const ChatScreen = () => {
   );
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
+    <StyledSafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: currentTheme.light }}
+    >
       {/* Header */}
       <StyledView className="flex-row items-center justify-between p-4">
         <StyledView className="flex-row items-center flex-1">
@@ -224,16 +263,19 @@ export const ChatScreen = () => {
           >
             <StyledView
               className="px-4 py-2 border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex-row items-center"
-              style={{ backgroundColor: selectedMode.color }}
+              style={{ backgroundColor: currentTheme.main }}
             >
               <StyledText className="font-space font-bold mr-2">
-                {selectedMode.name}
+                {selectedMode.name} MODE
               </StyledText>
               <Feather name="chevron-down" size={16} color="black" />
             </StyledView>
           </StyledPressable>
         </StyledView>
-        <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]">
+        <StyledPressable
+          className="border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+          style={{ backgroundColor: currentTheme.main }}
+        >
           <Feather name="phone" size={20} color="black" />
         </StyledPressable>
       </StyledView>
@@ -246,24 +288,48 @@ export const ChatScreen = () => {
         <StyledView className="flex-1 relative">
           <StyledScrollView
             ref={scrollViewRef}
-            className="flex-1 px-4 h-full"
+            className="flex-1 px-4"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexGrow: 1 }}
           >
-            {messages.length <= 1 && (
-              <StyledView className="absolute left-0 right-0 top-[30%] items-center justify-center">
-                <StyledImage
-                  source={selectedMode.image}
-                  className="w-80 h-80 opacity-40"
-                  resizeMode="contain"
-                />
-              </StyledView>
-            )}
             <StyledView className="flex-1">
-              {messages.map(renderMessage)}
-              {isTyping && renderTypingIndicator()}
-              <StyledView className="h-4" />
+              {messages.length <= 1 && (
+                <StyledView className="absolute left-0 right-0 top-[35%] items-center">
+                  <StyledImage
+                    source={selectedMode.image}
+                    className="w-80 h-80 opacity-40"
+                    resizeMode="contain"
+                  />
+                </StyledView>
+              )}
+              <StyledView className="w-full pt-4">
+                {messages.map((message) => (
+                  <StyledView
+                    key={message.id}
+                    className={`mb-4 flex-row ${
+                      message.isUser ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <StyledView
+                      className={`px-4 py-3 max-w-[80%] border-2 border-black rounded-tl-xl rounded-tr-xl ${
+                        message.isUser ? "rounded-bl-xl" : "rounded-br-xl"
+                      } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
+                      style={{
+                        backgroundColor: message.isUser
+                          ? currentTheme.main
+                          : "white",
+                      }}
+                    >
+                      <StyledText className="font-space text-base">
+                        {message.text}
+                      </StyledText>
+                    </StyledView>
+                  </StyledView>
+                ))}
+                {isTyping && renderTypingIndicator()}
+              </StyledView>
             </StyledView>
+            <StyledView className="h-6" />
           </StyledScrollView>
         </StyledView>
 
@@ -272,10 +338,13 @@ export const ChatScreen = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
         >
-          <StyledView className="p-4 border-t-2 border-black bg-white">
+          <StyledView
+            className="py-6 px-4 border-t-2 border-black"
+            style={{ backgroundColor: currentTheme.main }}
+          >
             <StyledView className="flex-row items-center">
               <StyledTextInput
-                className="flex-1 bg-gray-100 px-4 py-3 rounded-xl border-2 border-black font-space mr-2"
+                className="flex-1 bg-white px-4 py-3 rounded-xl border-2 border-black font-space mr-2"
                 placeholder="Type your message..."
                 value={inputText}
                 onChangeText={setInputText}
@@ -288,8 +357,14 @@ export const ChatScreen = () => {
                 className={`border-2 border-black rounded-xl w-10 h-10 items-center justify-center ${
                   !inputText.trim() || isTyping
                     ? "bg-gray-200"
-                    : "bg-[#FFB5C5] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+                    : "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
                 }`}
+                style={{
+                  backgroundColor:
+                    !inputText.trim() || isTyping
+                      ? "#E5E5E5"
+                      : currentTheme.lighter,
+                }}
               >
                 <Feather
                   name="send"
