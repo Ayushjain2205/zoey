@@ -15,6 +15,7 @@ import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useTheme, CHAT_MODES } from "../../context/ThemeContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -66,33 +67,33 @@ interface ChatModeConfig {
   color: string;
 }
 
-const CHAT_MODES: ChatModeConfig[] = [
-  {
+const modeConfig: Record<string, ChatModeConfig> = {
+  BFF: {
     name: "BFF",
     image: require("../../assets/images/zoey.png"),
     color: modeColors.BFF.main,
   },
-  {
-    name: "COACH",
-    image: require("../../assets/images/zoey_coach.png"),
-    color: modeColors.COACH.main,
-  },
-  {
+  MANAGER: {
     name: "MANAGER",
     image: require("../../assets/images/zoey_manager.png"),
     color: modeColors.MANAGER.main,
   },
-  {
-    name: "GF",
-    image: require("../../assets/images/zoey_gf.png"),
-    color: modeColors.GF.main,
+  COACH: {
+    name: "COACH",
+    image: require("../../assets/images/zoey_coach.png"),
+    color: modeColors.COACH.main,
   },
-  {
+  SHOPPER: {
     name: "SHOPPER",
     image: require("../../assets/images/zoey_shopper.png"),
     color: modeColors.SHOPPER.main,
   },
-];
+  GF: {
+    name: "GF",
+    image: require("../../assets/images/zoey_gf.png"),
+    color: modeColors.GF.main,
+  },
+};
 
 interface Message {
   id: string;
@@ -102,6 +103,7 @@ interface Message {
 }
 
 export const ChatScreen = () => {
+  const { selectedMode, setSelectedMode, currentTheme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -112,13 +114,8 @@ export const ChatScreen = () => {
   ]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedMode, setSelectedMode] = useState<ChatModeConfig>(
-    CHAT_MODES[0]
-  );
   const [isModePickerVisible, setIsModePickerVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
-
-  const currentTheme = modeColors[selectedMode.name];
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -221,7 +218,7 @@ export const ChatScreen = () => {
               <StyledPressable
                 key={mode.name}
                 className={`flex-row items-center p-4 border-b-2 border-black last:border-b-0 active:opacity-70`}
-                style={{ backgroundColor: modeColors[mode.name].main }}
+                style={{ backgroundColor: mode.color }}
                 onPress={() => {
                   setSelectedMode(mode);
                   setIsModePickerVisible(false);

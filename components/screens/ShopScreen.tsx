@@ -4,6 +4,7 @@ import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useTheme } from "../../context/ThemeContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -121,6 +122,7 @@ const abilities: ShopItem[] = [
 ];
 
 export const ShopScreen = () => {
+  const { currentTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] =
     useState<Category>("abilities");
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
@@ -229,9 +231,12 @@ export const ShopScreen = () => {
   };
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
+    <StyledSafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: currentTheme.light }}
+    >
       <StyledView className="flex-1 px-4">
-        {/* Header with back button */}
+        {/* Header */}
         <StyledView className="flex-row items-center justify-between py-4">
           <StyledView className="flex-row items-center">
             <StyledPressable
@@ -258,18 +263,21 @@ export const ShopScreen = () => {
         {/* Category Tabs */}
         <StyledView className="flex-row mb-4">
           {[
-            { id: "abilities" as const, label: "Abilities", color: "#FFB5C5" },
-            { id: "gifts" as const, label: "Gifts", color: "#FFFFFF" },
-            { id: "boosts" as const, label: "Boosts", color: "#FFFFFF" },
+            { id: "abilities", label: "Abilities" },
+            { id: "gifts", label: "Gifts" },
+            { id: "boosts", label: "Boosts" },
           ].map((category) => (
             <StyledPressable
               key={category.id}
-              onPress={() => setSelectedCategory(category.id)}
-              className={`flex-1 py-2 px-4 border-2 border-black rounded-xl mr-2 last:mr-0 ${
-                selectedCategory === category.id
-                  ? "bg-[#FFB5C5] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
-                  : "bg-white"
-              }`}
+              className={`flex-1 py-2 px-4 border-2 border-black rounded-xl mr-2 last:mr-0`}
+              style={{
+                backgroundColor:
+                  category.id === "abilities" ? currentTheme.main : "white",
+                shadowOffset: { width: 3, height: 3 },
+                shadowOpacity: 1,
+                shadowRadius: 0,
+                shadowColor: "#000",
+              }}
             >
               <StyledText className="font-space text-center">
                 {category.label}

@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import SplashScreen from "../components/screens/SplashScreen";
 import { View } from "react-native";
 import { styled } from "nativewind";
+import { ThemeProvider } from "../context/ThemeContext";
 
 const StyledView = styled(View);
 
@@ -36,27 +37,29 @@ export default function RootLayout() {
   }
 
   return (
-    <PrivyProvider
-      appId={Constants.expoConfig?.extra?.privyAppId}
-      clientId={Constants.expoConfig?.extra?.privyClientId}
-      supportedChains={[scrollSepolia]}
-      config={{
-        embedded: {
-          ethereum: {
-            createOnLogin: "users-without-wallets",
+    <ThemeProvider>
+      <PrivyProvider
+        appId={Constants.expoConfig?.extra?.privyAppId}
+        clientId={Constants.expoConfig?.extra?.privyClientId}
+        supportedChains={[scrollSepolia]}
+        config={{
+          embedded: {
+            ethereum: {
+              createOnLogin: "users-without-wallets",
+            },
           },
-        },
-      }}
-    >
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
-      <PrivyElements />
-    </PrivyProvider>
+        }}
+      >
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+        <PrivyElements />
+      </PrivyProvider>
+    </ThemeProvider>
   );
 }
