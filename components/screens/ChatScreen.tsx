@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   Image,
   Modal,
+  Animated,
+  Easing,
 } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -118,6 +120,149 @@ export const ChatScreen = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isModePickerVisible, setIsModePickerVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Voice call states
+  const [isInCall, setIsInCall] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const blobAnimation = useRef(new Animated.Value(0)).current;
+  const voiceAnimation = useRef(new Animated.Value(0)).current;
+
+  // Blob animation
+  useEffect(() => {
+    if (isInCall) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(blobAnimation, {
+            toValue: 1,
+            duration: 2000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(blobAnimation, {
+            toValue: 0,
+            duration: 2000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Simulate voice activity
+      const voiceInterval = setInterval(() => {
+        Animated.sequence([
+          Animated.timing(voiceAnimation, {
+            toValue: Math.random(),
+            duration: 200,
+            useNativeDriver: true,
+            easing: Easing.linear,
+          }),
+        ]).start();
+      }, 200);
+
+      return () => {
+        clearInterval(voiceInterval);
+        blobAnimation.setValue(0);
+        voiceAnimation.setValue(0);
+      };
+    }
+  }, [isInCall]);
+
+  const handleCallPress = () => {
+    setIsInCall(true);
+  };
+
+  const handleEndCall = () => {
+    setIsInCall(false);
+  };
+
+  const handleToggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const renderCallInterface = () => {
+    if (!isInCall) return null;
+
+    const scale = blobAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 1.2],
+    });
+
+    const voiceScale = voiceAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 1.3],
+    });
+
+    return (
+      <Modal
+        transparent
+        visible={isInCall}
+        animationType="fade"
+        onRequestClose={handleEndCall}
+      >
+        <StyledView
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: currentTheme.light }}
+        >
+          {/* Animated Blob */}
+          <StyledView className="relative items-center justify-center w-80 h-80">
+            <Animated.View
+              style={{
+                position: "absolute",
+                width: 280,
+                height: 280,
+                borderRadius: 140,
+                backgroundColor: currentTheme.main,
+                opacity: 0.5,
+                transform: [{ scale }],
+              }}
+            />
+            <Animated.View
+              style={{
+                position: "absolute",
+                width: 240,
+                height: 240,
+                borderRadius: 120,
+                backgroundColor: currentTheme.main,
+                opacity: 0.7,
+                transform: [{ scale: voiceScale }],
+              }}
+            />
+            <StyledView
+              className="w-48 h-48 rounded-full items-center justify-center border-2 border-black"
+              style={{ backgroundColor: currentTheme.main }}
+            >
+              <StyledImage
+                source={selectedMode.image}
+                className="w-40 h-40"
+                resizeMode="contain"
+              />
+            </StyledView>
+          </StyledView>
+
+          {/* Call Controls */}
+          <StyledView className="flex-row space-x-4 mt-8">
+            <StyledPressable
+              onPress={handleToggleMute}
+              className="w-14 h-14 rounded-full border-2 border-black items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+              style={{ backgroundColor: isMuted ? "#FF6B6B" : "white" }}
+            >
+              <Feather
+                name={isMuted ? "mic-off" : "mic"}
+                size={24}
+                color="black"
+              />
+            </StyledPressable>
+            <StyledPressable
+              onPress={handleEndCall}
+              className="w-14 h-14 bg-red-500 rounded-full border-2 border-black items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+            >
+              <Feather name="phone-off" size={24} color="white" />
+            </StyledPressable>
+          </StyledView>
+        </StyledView>
+      </Modal>
+    );
+  };
 
   // Reset messages when mode changes
   useEffect(() => {
@@ -329,6 +474,7 @@ export const ChatScreen = () => {
           </StyledPressable>
         </StyledView>
         <StyledPressable
+          onPress={handleCallPress}
           className="border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
           style={{ backgroundColor: currentTheme.main }}
         >
@@ -337,6 +483,7 @@ export const ChatScreen = () => {
       </StyledView>
 
       {renderModePicker()}
+      {renderCallInterface()}
 
       {/* Chat Container */}
       <StyledView className="flex-1 justify-between">
