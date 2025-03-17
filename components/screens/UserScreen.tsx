@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { NeuButton } from "../functional/NeuButton";
 import { router } from "expo-router";
+import { useTheme } from "../../context/ThemeContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -13,6 +14,7 @@ const StyledSafeAreaView = styled(SafeAreaView);
 const StyledImage = styled(Image);
 
 export const UserScreen = () => {
+  const { currentTheme } = useTheme();
   const attributes = [
     { name: "Empathy", value: 85 },
     { name: "Wisdom", value: 68 },
@@ -144,7 +146,11 @@ export const UserScreen = () => {
   });
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
+    <StyledSafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: currentTheme.light }}
+      edges={["top"]}
+    >
       <StyledView className="flex-1 px-4 pt-2">
         {/* Main Card */}
         <StyledView className="flex-1 space-y-4">
@@ -163,7 +169,10 @@ export const UserScreen = () => {
                       resizeMode="cover"
                     />
                   </StyledView>
-                  <StyledView className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#FFB5C5] border-2 border-black rounded-full items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <StyledView
+                    className="absolute -bottom-1 -right-1 w-6 h-6 border-2 border-black rounded-full items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                    style={{ backgroundColor: currentTheme.main }}
+                  >
                     <StyledText className="font-space text-xs">5</StyledText>
                   </StyledView>
                 </StyledView>
@@ -180,7 +189,10 @@ export const UserScreen = () => {
                 <StyledText className="font-space text-lg mr-2">
                   2,450
                 </StyledText>
-                <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]">
+                <StyledPressable
+                  className="border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+                  style={{ backgroundColor: currentTheme.main }}
+                >
                   <StyledView className="w-3.5 h-3.5 bg-yellow-400 rounded-full border border-black" />
                 </StyledPressable>
               </StyledView>
@@ -203,8 +215,11 @@ export const UserScreen = () => {
                   </StyledView>
                   <StyledView className="h-2 bg-white rounded-xl border-2 border-black overflow-hidden mt-0.5">
                     <StyledView
-                      className="h-full bg-[#FFB5C5] rounded-xl"
-                      style={{ width: `${attribute.value}%` }}
+                      className="h-full rounded-xl"
+                      style={{
+                        width: `${attribute.value}%`,
+                        backgroundColor: currentTheme.main,
+                      }}
                     />
                   </StyledView>
                 </StyledView>
@@ -223,7 +238,10 @@ export const UserScreen = () => {
                 <StyledText className="font-space text-xl font-bold">
                   Daily Challenges
                 </StyledText>
-                <StyledView className="bg-[#FFE5EC] px-3 py-1 rounded-xl border-2 border-black">
+                <StyledView
+                  className="px-3 py-1 rounded-xl border-2 border-black"
+                  style={{ backgroundColor: currentTheme.light }}
+                >
                   <StyledText className="font-space text-sm">
                     {completedCount}/{challenges.length}
                   </StyledText>
@@ -245,9 +263,12 @@ export const UserScreen = () => {
                   <StyledPressable
                     key={challenge.id}
                     onPress={() => toggleChallenge(challenge.id)}
-                    className={`p-3 border-2 border-black rounded-xl active:scale-[0.98] ${
-                      challenge.completed ? "bg-[#DCFCE7]" : "bg-[#FFE5EC]"
-                    }`}
+                    className={`p-3 border-2 border-black rounded-xl active:scale-[0.98]`}
+                    style={{
+                      backgroundColor: challenge.completed
+                        ? "#DCFCE7"
+                        : currentTheme.light,
+                    }}
                   >
                     <StyledView className="flex-row items-center justify-between">
                       <StyledView className="flex-row items-center flex-1 mr-3">
@@ -287,11 +308,13 @@ export const UserScreen = () => {
 
                 <StyledPressable
                   onPress={handleClaimRewards}
-                  className={`mt-2 flex-row items-center justify-center py-2.5 px-4 rounded-xl border-2 border-black ${
-                    canClaimRewards
-                      ? "bg-[#FFB5C5] opacity-100 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
-                      : "bg-[#FFE5EC] opacity-50"
-                  }`}
+                  className={`mt-2 flex-row items-center justify-center py-2.5 px-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]`}
+                  style={{
+                    backgroundColor: canClaimRewards
+                      ? currentTheme.main
+                      : currentTheme.light,
+                    opacity: canClaimRewards ? 1 : 0.5,
+                  }}
                   disabled={!canClaimRewards}
                 >
                   <Feather name="award" size={16} color="black" />
@@ -375,7 +398,11 @@ export const UserScreen = () => {
                 className="bg-white border-2 border-black rounded-xl w-[31%] py-3 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
               >
                 <StyledView className="items-center">
-                  <Feather name={item.icon as any} size={22} color="#FFB5C5" />
+                  <Feather
+                    name={item.icon as any}
+                    size={22}
+                    style={{ color: currentTheme.main }}
+                  />
                   <StyledText className="font-space mt-1 text-sm">
                     {item.name}
                   </StyledText>
@@ -388,7 +415,7 @@ export const UserScreen = () => {
           <NeuButton
             onPress={() => router.push("/chat")}
             width="100%"
-            color="#FFB5C5"
+            color={currentTheme.main}
           >
             <StyledView className="flex-row justify-center items-center px-4">
               <Feather name="message-circle" size={22} color="black" />
