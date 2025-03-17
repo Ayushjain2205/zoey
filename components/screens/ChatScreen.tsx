@@ -32,6 +32,11 @@ import {
   handleShopperMessage,
   ProductCollection,
 } from "../shopper/ShopperTemplates";
+import {
+  CalendarView,
+  handleManagerMessage,
+  DaySchedule,
+} from "../manager/ManagerTemplates";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -118,6 +123,7 @@ interface Message {
   timestamp: Date;
   workoutTemplate?: WorkoutTemplate;
   productCollection?: ProductCollection;
+  daySchedule?: DaySchedule;
 }
 
 const modeIntroMessages: Record<ChatMode, string> = {
@@ -380,6 +386,32 @@ export const ChatScreen = () => {
       }
     }
 
+    // Special handling for manager mode
+    if (selectedMode.name === "MANAGER") {
+      const managerResponse = handleManagerMessage(text);
+      if (managerResponse) {
+        setTimeout(() => {
+          const response: Message = {
+            id: (Date.now() + 1).toString(),
+            text:
+              managerResponse.type === "message"
+                ? (managerResponse.content as string)
+                : "CALENDAR_VIEW",
+            isUser: false,
+            timestamp: new Date(),
+            daySchedule:
+              managerResponse.type === "calendar"
+                ? (managerResponse.content as DaySchedule)
+                : undefined,
+          };
+          setMessages((prev) => [...prev, response]);
+          setIsTyping(false);
+          scrollToBottom();
+        }, 1000);
+        return;
+      }
+    }
+
     try {
       // Convert messages to OpenAI format
       const openAIMessages: OpenAIMessage[] = messages.map((msg) => ({
@@ -456,6 +488,21 @@ export const ChatScreen = () => {
         <StyledView key={message.id} className="mb-4">
           <ProductGrid
             collection={message.productCollection}
+            currentTheme={currentTheme}
+          />
+        </StyledView>
+      );
+    }
+
+    if (
+      !message.isUser &&
+      message.text === "CALENDAR_VIEW" &&
+      message.daySchedule
+    ) {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <CalendarView
+            schedule={message.daySchedule}
             currentTheme={currentTheme}
           />
         </StyledView>
