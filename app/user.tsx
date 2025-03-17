@@ -1,5 +1,13 @@
+import { Redirect } from "expo-router";
 import { UserScreen } from "../components/screens/UserScreen";
+import { usePrivy } from "@privy-io/expo";
+import LoginScreen from "@/components/screens/LoginScreen";
 
 export default function User() {
-  return <UserScreen />;
+  const { user } = usePrivy();
+  if (!user) {
+    return <LoginScreen />;
+  } else {
+    return <UserScreen />;
+  }
 }

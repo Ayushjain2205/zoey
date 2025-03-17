@@ -10,15 +10,13 @@
     "splash": {
       "image": null,
       "resizeMode": "contain",
-      "backgroundColor": "#A7D2BC"
+      "backgroundColor": "#E0B3FF"
     },
     "ios": {
       "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "dev.privy.example",
-      "associatedDomains": [
-        "webcredentials:<your-associated-domain>"
-      ],
+      "associatedDomains": ["webcredentials:<your-associated-domain>"],
       "infoPlist": {
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true

@@ -10,15 +10,21 @@ const StyledText = styled(Text);
 const StyledPressable = styled(Pressable);
 const StyledVideo = styled(Video);
 
-const TypewriterText = ({ text, delay = 50 }: { text: string; delay?: number }) => {
+const TypewriterText = ({
+  text,
+  delay = 50,
+}: {
+  text: string;
+  delay?: number;
+}) => {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(c => c + 1);
+        setDisplayText((prev) => prev + text[currentIndex]);
+        setCurrentIndex((c) => c + 1);
       }, delay);
       return () => clearTimeout(timeout);
     }
@@ -26,8 +32,8 @@ const TypewriterText = ({ text, delay = 50 }: { text: string; delay?: number }) 
 
   return (
     <StyledView className="min-h-[64px] w-[90%] justify-center">
-      <StyledText 
-        style={{ fontFamily: 'SpaceGrotesk_400Regular' }}
+      <StyledText
+        style={{ fontFamily: "SpaceGrotesk_400Regular" }}
         className="text-2xl text-black text-center leading-8"
       >
         {displayText}
@@ -43,10 +49,13 @@ export default function LoginScreen() {
   const videoRef = useRef<Video>(null);
 
   return (
-    <StyledView className="flex-1 bg-[#A7D2BC] p-5">
+    <StyledView className="flex-1 bg-[#F0E5FF] p-5">
       {/* Video and Title Container */}
       <StyledView className="flex-1 items-center justify-center">
-        <StyledView className="relative mb-5" style={{ width: screenWidth - 40, aspectRatio: 1 }}>
+        <StyledView
+          className="relative mb-5"
+          style={{ width: screenWidth - 40, aspectRatio: 1 }}
+        >
           {/* Shadow box - following neubrutalism design system */}
           <StyledView className="absolute w-full h-full bg-black rounded-xl top-[5px] left-[5px]" />
           {/* Main container - following neubrutalism design system */}
@@ -83,18 +92,23 @@ export default function LoginScreen() {
               });
           }}
         >
-          <Text style={{ 
-            fontFamily: 'SpaceGrotesk_400Regular',
-            fontSize: 24,
-            color: '#000000',
-            textAlign: 'center',
-          }}>
+          <Text
+            style={{
+              fontFamily: "SpaceGrotesk_400Regular",
+              fontSize: 24,
+              color: "#000000",
+              textAlign: "center",
+            }}
+          >
             Login
           </Text>
         </NeuButton>
 
         {error && (
-          <StyledText style={{ fontFamily: 'SpaceGrotesk_400Regular' }} className="text-red-500 mt-5">
+          <StyledText
+            style={{ fontFamily: "SpaceGrotesk_400Regular" }}
+            className="text-red-500 mt-5"
+          >
             Error: {error}
           </StyledText>
         )}
