@@ -15,11 +15,18 @@ import {
 } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTheme, CHAT_MODES } from "../../context/ThemeContext";
 import { sendMessage, Message as OpenAIMessage } from "../../utils/openai";
 import Markdown from "react-native-markdown-display";
+import {
+  WorkoutCard,
+  StreakTracker,
+  legWorkout,
+  handleCoachMessage,
+  WorkoutTemplate,
+} from "../coach/CoachTemplates";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -104,6 +111,7 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  workoutTemplate?: WorkoutTemplate;
 }
 
 const modeIntroMessages: Record<ChatMode, string> = {
@@ -115,6 +123,9 @@ const modeIntroMessages: Record<ChatMode, string> = {
     "Shopping time! 🛍️ Looking for something specific or just want to browse?",
   GF: "Hey sweetie! 💖 How's your day going? Tell me all about it!",
 };
+
+// Add type for Feather icon names
+type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 
 export const ChatScreen = () => {
   const { selectedMode, setSelectedMode, currentTheme } = useTheme();
@@ -311,6 +322,32 @@ export const ChatScreen = () => {
     // Show typing indicator
     setIsTyping(true);
 
+    // Special handling for coach mode
+    if (selectedMode.name === "COACH") {
+      const coachResponse = handleCoachMessage(text);
+      if (coachResponse) {
+        setTimeout(() => {
+          const response: Message = {
+            id: (Date.now() + 1).toString(),
+            text:
+              coachResponse.type === "message"
+                ? (coachResponse.content as string)
+                : "WORKOUT_TEMPLATE",
+            isUser: false,
+            timestamp: new Date(),
+            workoutTemplate:
+              coachResponse.type === "workout"
+                ? (coachResponse.content as WorkoutTemplate)
+                : undefined,
+          };
+          setMessages((prev) => [...prev, response]);
+          setIsTyping(false);
+          scrollToBottom();
+        }, 1000);
+        return;
+      }
+    }
+
     try {
       // Convert messages to OpenAI format
       const openAIMessages: OpenAIMessage[] = messages.map((msg) => ({
@@ -354,53 +391,78 @@ export const ChatScreen = () => {
     scrollToBottom();
   }, [messages]);
 
-  const renderMessage = (message: Message) => (
-    <StyledView
-      key={message.id}
-      className={`mb-4 flex-row ${
-        message.isUser ? "justify-end" : "justify-start"
-      }`}
-    >
+  const renderMessage = (message: Message) => {
+    if (
+      !message.isUser &&
+      message.text === "WORKOUT_TEMPLATE" &&
+      message.workoutTemplate
+    ) {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <WorkoutCard
+            workout={message.workoutTemplate}
+            currentTheme={currentTheme}
+          />
+        </StyledView>
+      );
+    }
+
+    if (!message.isUser && message.text === "SHOW_STREAK_TRACKER") {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <StreakTracker currentTheme={currentTheme} />
+        </StyledView>
+      );
+    }
+
+    return (
       <StyledView
-        className={`px-4 py-3 max-w-[80%] border-2 border-black ${
-          message.isUser
-            ? `rounded-tl-xl rounded-tr-xl rounded-bl-xl`
-            : "bg-white rounded-tl-xl rounded-tr-xl rounded-br-xl"
-        } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
-        style={{
-          backgroundColor: message.isUser ? currentTheme.main : "white",
-        }}
+        key={message.id}
+        className={`mb-4 flex-row ${
+          message.isUser ? "justify-end" : "justify-start"
+        }`}
       >
-        <Markdown
+        <StyledView
+          className={`px-4 py-3 max-w-[80%] border-2 border-black ${
+            message.isUser
+              ? `rounded-tl-xl rounded-tr-xl rounded-bl-xl`
+              : "bg-white rounded-tl-xl rounded-tr-xl rounded-br-xl"
+          } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
           style={{
-            body: {
-              fontFamily: "SpaceGrotesk_400Regular",
-              fontSize: 16,
-              color: message.isUser ? "#000000" : "#000000",
-            },
-            code: {
-              fontFamily: "SpaceGrotesk_400Regular",
-              backgroundColor: message.isUser
-                ? currentTheme.lighter
-                : "#F0F0F0",
-              padding: 4,
-              borderRadius: 4,
-            },
-            code_inline: {
-              fontFamily: "SpaceGrotesk_400Regular",
-              backgroundColor: message.isUser
-                ? currentTheme.lighter
-                : "#F0F0F0",
-              padding: 2,
-              borderRadius: 4,
-            },
+            backgroundColor: message.isUser ? currentTheme.main : "white",
           }}
         >
-          {message.text}
-        </Markdown>
+          <Markdown
+            style={{
+              body: {
+                fontFamily: "SpaceGrotesk_400Regular",
+                fontSize: 16,
+                color: message.isUser ? "#000000" : "#000000",
+              },
+              code: {
+                fontFamily: "SpaceGrotesk_400Regular",
+                backgroundColor: message.isUser
+                  ? currentTheme.lighter
+                  : "#F0F0F0",
+                padding: 4,
+                borderRadius: 4,
+              },
+              code_inline: {
+                fontFamily: "SpaceGrotesk_400Regular",
+                backgroundColor: message.isUser
+                  ? currentTheme.lighter
+                  : "#F0F0F0",
+                padding: 2,
+                borderRadius: 4,
+              },
+            }}
+          >
+            {message.text}
+          </Markdown>
+        </StyledView>
       </StyledView>
-    </StyledView>
-  );
+    );
+  };
 
   const renderTypingIndicator = () => (
     <StyledView className="flex-row mb-4">
