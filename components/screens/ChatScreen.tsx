@@ -8,6 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
+  Modal,
 } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +22,43 @@ const StyledPressable = styled(Pressable);
 const StyledTextInput = styled(TextInput);
 const StyledScrollView = styled(ScrollView);
 const StyledSafeAreaView = styled(SafeAreaView);
+const StyledImage = styled(Image);
+
+type ChatMode = "BFF" | "COACH" | "MANAGER" | "GF" | "SHOPPER";
+
+interface ChatModeConfig {
+  name: ChatMode;
+  image: any;
+  color: string;
+}
+
+const CHAT_MODES: ChatModeConfig[] = [
+  {
+    name: "BFF",
+    image: require("../../assets/images/zoey.png"),
+    color: "#FFB5C5",
+  },
+  {
+    name: "COACH",
+    image: require("../../assets/images/zoey_coach.png"),
+    color: "#90EE90",
+  },
+  {
+    name: "MANAGER",
+    image: require("../../assets/images/zoey_manager.png"),
+    color: "#87CEEB",
+  },
+  {
+    name: "GF",
+    image: require("../../assets/images/zoey_gf.png"),
+    color: "#FFB6C1",
+  },
+  {
+    name: "SHOPPER",
+    image: require("../../assets/images/zoey_shopper.png"),
+    color: "#DDA0DD",
+  },
+];
 
 interface Message {
   id: string;
@@ -39,6 +78,10 @@ export const ChatScreen = () => {
   ]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<ChatModeConfig>(
+    CHAT_MODES[0]
+  );
+  const [isModePickerVisible, setIsModePickerVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const scrollToBottom = () => {
@@ -125,6 +168,44 @@ export const ChatScreen = () => {
     </StyledView>
   );
 
+  const renderModePicker = () => (
+    <Modal
+      transparent
+      visible={isModePickerVisible}
+      animationType="fade"
+      onRequestClose={() => setIsModePickerVisible(false)}
+    >
+      <StyledPressable
+        className="flex-1 bg-black/50"
+        onPress={() => setIsModePickerVisible(false)}
+      >
+        <StyledView className="mt-32 mx-4">
+          <StyledView className="bg-white border-2 border-black rounded-xl overflow-hidden">
+            {CHAT_MODES.map((mode) => (
+              <StyledPressable
+                key={mode.name}
+                className={`flex-row items-center p-4 border-b-2 border-black last:border-b-0 active:opacity-70`}
+                style={{ backgroundColor: mode.color }}
+                onPress={() => {
+                  setSelectedMode(mode);
+                  setIsModePickerVisible(false);
+                }}
+              >
+                <StyledImage
+                  source={mode.image}
+                  className="w-10 h-10 rounded-full border-2 border-black"
+                />
+                <StyledText className="ml-3 font-space font-bold">
+                  {mode.name} MODE
+                </StyledText>
+              </StyledPressable>
+            ))}
+          </StyledView>
+        </StyledView>
+      </StyledPressable>
+    </Modal>
+  );
+
   return (
     <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
       {/* Header */}
@@ -136,8 +217,20 @@ export const ChatScreen = () => {
           >
             <Feather name="arrow-left" size={20} color="black" />
           </StyledPressable>
-          <StyledPressable className="ml-4 bg-[#FFB5C5] px-4 py-2 border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-            <StyledText className="font-space font-bold">Bff Mode</StyledText>
+
+          <StyledPressable
+            onPress={() => setIsModePickerVisible(true)}
+            className="ml-4"
+          >
+            <StyledView
+              className="px-4 py-2 border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex-row items-center"
+              style={{ backgroundColor: selectedMode.color }}
+            >
+              <StyledText className="font-space font-bold mr-2">
+                {selectedMode.name}
+              </StyledText>
+              <Feather name="chevron-down" size={16} color="black" />
+            </StyledView>
           </StyledPressable>
         </StyledView>
         <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]">
@@ -145,18 +238,34 @@ export const ChatScreen = () => {
         </StyledPressable>
       </StyledView>
 
+      {renderModePicker()}
+
       {/* Chat Container */}
       <StyledView className="flex-1 justify-between">
         {/* Messages */}
-        <StyledScrollView
-          ref={scrollViewRef}
-          className="flex-1 px-4"
-          showsVerticalScrollIndicator={false}
-        >
-          {messages.map(renderMessage)}
-          {isTyping && renderTypingIndicator()}
-          <StyledView className="h-4" />
-        </StyledScrollView>
+        <StyledView className="flex-1 relative">
+          <StyledScrollView
+            ref={scrollViewRef}
+            className="flex-1 px-4 h-full"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {messages.length <= 1 && (
+              <StyledView className="absolute left-0 right-0 top-[30%] items-center justify-center">
+                <StyledImage
+                  source={selectedMode.image}
+                  className="w-80 h-80 opacity-40"
+                  resizeMode="contain"
+                />
+              </StyledView>
+            )}
+            <StyledView className="flex-1">
+              {messages.map(renderMessage)}
+              {isTyping && renderTypingIndicator()}
+              <StyledView className="h-4" />
+            </StyledView>
+          </StyledScrollView>
+        </StyledView>
 
         {/* Input Bar */}
         <KeyboardAvoidingView
