@@ -401,7 +401,7 @@ export const UserScreen = () => {
                   <Feather
                     name={item.icon as any}
                     size={22}
-                    style={{ color: currentTheme.main }}
+                    style={{ color: currentTheme.dark }}
                   />
                   <StyledText className="font-space mt-1 text-sm">
                     {item.name}

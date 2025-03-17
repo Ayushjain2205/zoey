@@ -6,6 +6,7 @@ export interface ThemeColors {
   main: string;
   light: string;
   lighter: string;
+  dark: string;
 }
 
 export const modeColors: Record<string, ThemeColors> = {
@@ -13,26 +14,31 @@ export const modeColors: Record<string, ThemeColors> = {
     main: "#E0B3FF",
     light: "#F0E5FF",
     lighter: "#F8F5FF",
+    dark: "#B366FF",
   },
   MANAGER: {
     main: "#BAFFC9",
     light: "#E5FFE9",
     lighter: "#F5FFF7",
+    dark: "#7AFF8F",
   },
   COACH: {
     main: "#BAE1FF",
     light: "#E5F4FF",
     lighter: "#F5FAFF",
+    dark: "#7AC2FF",
   },
   SHOPPER: {
-    main: "#FFFFBA",
-    light: "#FFFFE5",
-    lighter: "#FFFFF5",
+    main: "#7EE8E8",
+    light: "#E5FDFD",
+    lighter: "#F5FEFE",
+    dark: "#4AD8D8",
   },
   GF: {
     main: "#FFB3BA",
     light: "#FFE5E8",
     lighter: "#FFF5F7",
+    dark: "#FF7A85",
   },
 };
 
