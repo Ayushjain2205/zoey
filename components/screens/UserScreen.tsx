@@ -14,7 +14,7 @@ const StyledSafeAreaView = styled(SafeAreaView);
 const StyledImage = styled(Image);
 
 export const UserScreen = () => {
-  const { currentTheme } = useTheme();
+  const { currentTheme, selectedMode } = useTheme();
   const attributes = [
     { name: "Empathy", value: 85 },
     { name: "Wisdom", value: 68 },
@@ -163,7 +163,7 @@ export const UserScreen = () => {
                 <StyledView className="relative">
                   <StyledView className="w-20 h-20 border-2 border-black rounded-full overflow-hidden shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
                     <StyledImage
-                      source={require("../../assets/images/zoey.png")}
+                      source={selectedMode.image}
                       className="w-full h-full"
                       style={{ borderRadius: 9999 }}
                       resizeMode="cover"
