@@ -106,12 +106,22 @@ interface Message {
   timestamp: Date;
 }
 
+const modeIntroMessages: Record<ChatMode, string> = {
+  BFF: "Hey bestie! 💕 Ready to chat about anything and everything? I'm all ears!",
+  COACH: "Let's crush those goals together! 💪 What are we working on today?",
+  MANAGER:
+    "Time to get productive! 📊 What can I help you organize or accomplish?",
+  SHOPPER:
+    "Shopping time! 🛍️ Looking for something specific or just want to browse?",
+  GF: "Hey sweetie! 💖 How's your day going? Tell me all about it!",
+};
+
 export const ChatScreen = () => {
   const { selectedMode, setSelectedMode, currentTheme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hi! I'm Zoey. How can I help you today?",
+      text: modeIntroMessages[selectedMode.name],
       isUser: false,
       timestamp: new Date(),
     },
@@ -269,7 +279,7 @@ export const ChatScreen = () => {
     setMessages([
       {
         id: "1",
-        text: `Hi! I'm Zoey in ${selectedMode.name} mode. How can I help you today?`,
+        text: modeIntroMessages[selectedMode.name],
         isUser: false,
         timestamp: new Date(),
       },
