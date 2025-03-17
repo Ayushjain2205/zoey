@@ -16,6 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTheme, CHAT_MODES } from "../../context/ThemeContext";
+import { sendMessage, Message as OpenAIMessage } from "../../utils/openai";
+import Markdown from "react-native-markdown-display";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -123,7 +125,7 @@ export const ChatScreen = () => {
     }, 100);
   };
 
-  const sendMessage = (text: string) => {
+  const sendMessageToAPI = async (text: string) => {
     if (!text.trim() || isTyping) return;
 
     const newMessage: Message = {
@@ -137,50 +139,51 @@ export const ChatScreen = () => {
     setInputText("");
     scrollToBottom();
 
-    // Simulate Zoey typing
+    // Show typing indicator
     setIsTyping(true);
 
-    // Simulate Zoey's response
-    setTimeout(() => {
-      const responses = [
-        "That's interesting! Tell me more about it.",
-        "I understand how you feel.",
-        "I'm here to listen and help!",
-        "That must have been challenging.",
-        "You're doing great! Keep going!",
-      ];
-      const randomResponse =
-        responses[Math.floor(Math.random() * responses.length)];
+    try {
+      // Convert messages to OpenAI format
+      const openAIMessages: OpenAIMessage[] = messages.map((msg) => ({
+        role: msg.isUser ? "user" : "assistant",
+        content: msg.text,
+      }));
+
+      // Add the new message
+      openAIMessages.push({
+        role: "user",
+        content: text.trim(),
+      });
+
+      // Get response from OpenAI
+      const response = await sendMessage(openAIMessages, selectedMode.name);
 
       const zoeyResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: randomResponse,
+        text: response,
         isUser: false,
         timestamp: new Date(),
       };
 
-      setIsTyping(false);
       setMessages((prev) => [...prev, zoeyResponse]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Sorry, I encountered an error. Please try again.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
       scrollToBottom();
-    }, 2000);
+    }
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const renderTypingIndicator = () => (
-    <StyledView className="flex-row mb-4">
-      <StyledView className="px-4 py-3 bg-white border-2 border-black rounded-tl-xl rounded-tr-xl rounded-br-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-        <StyledView className="flex-row items-center space-x-2">
-          <ActivityIndicator size="small" color="#000" />
-          <StyledText className="font-space text-sm">
-            Zoey is typing...
-          </StyledText>
-        </StyledView>
-      </StyledView>
-    </StyledView>
-  );
 
   const renderMessage = (message: Message) => (
     <StyledView
@@ -196,7 +199,42 @@ export const ChatScreen = () => {
             : "bg-white rounded-tl-xl rounded-tr-xl rounded-br-xl"
         } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
       >
-        <StyledText className="font-space text-base">{message.text}</StyledText>
+        <Markdown
+          style={{
+            body: {
+              fontFamily: "SpaceGrotesk_400Regular",
+              fontSize: 16,
+              color: "#000000",
+            },
+            code: {
+              fontFamily: "SpaceGrotesk_400Regular",
+              backgroundColor: "#F0F0F0",
+              padding: 4,
+              borderRadius: 4,
+            },
+            code_inline: {
+              fontFamily: "SpaceGrotesk_400Regular",
+              backgroundColor: "#F0F0F0",
+              padding: 2,
+              borderRadius: 4,
+            },
+          }}
+        >
+          {message.text}
+        </Markdown>
+      </StyledView>
+    </StyledView>
+  );
+
+  const renderTypingIndicator = () => (
+    <StyledView className="flex-row mb-4">
+      <StyledView className="px-4 py-3 bg-white border-2 border-black rounded-tl-xl rounded-tr-xl rounded-br-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <StyledView className="flex-row items-center space-x-2">
+          <ActivityIndicator size="small" color="#000" />
+          <StyledText className="font-space text-sm">
+            Zoey is typing...
+          </StyledText>
+        </StyledView>
       </StyledView>
     </StyledView>
   );
@@ -300,29 +338,7 @@ export const ChatScreen = () => {
                 </StyledView>
               )}
               <StyledView className="w-full pt-4">
-                {messages.map((message) => (
-                  <StyledView
-                    key={message.id}
-                    className={`mb-4 flex-row ${
-                      message.isUser ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    <StyledView
-                      className={`px-4 py-3 max-w-[80%] border-2 border-black rounded-tl-xl rounded-tr-xl ${
-                        message.isUser ? "rounded-bl-xl" : "rounded-br-xl"
-                      } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
-                      style={{
-                        backgroundColor: message.isUser
-                          ? currentTheme.main
-                          : "white",
-                      }}
-                    >
-                      <StyledText className="font-space text-base">
-                        {message.text}
-                      </StyledText>
-                    </StyledView>
-                  </StyledView>
-                ))}
+                {messages.map((message) => renderMessage(message))}
                 {isTyping && renderTypingIndicator()}
               </StyledView>
             </StyledView>
@@ -345,11 +361,11 @@ export const ChatScreen = () => {
                 placeholder="Type your message..."
                 value={inputText}
                 onChangeText={setInputText}
-                onSubmitEditing={() => sendMessage(inputText)}
+                onSubmitEditing={() => sendMessageToAPI(inputText)}
                 returnKeyType="send"
               />
               <StyledPressable
-                onPress={() => sendMessage(inputText)}
+                onPress={() => sendMessageToAPI(inputText)}
                 disabled={!inputText.trim() || isTyping}
                 className={`border-2 border-black rounded-xl w-10 h-10 items-center justify-center ${
                   !inputText.trim() || isTyping
