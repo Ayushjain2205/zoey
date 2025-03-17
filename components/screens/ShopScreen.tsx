@@ -203,11 +203,8 @@ export const ShopScreen = () => {
           resizeMode="contain"
         />
       </StyledView>
-      <StyledView className="flex-row items-center justify-between">
-        <StyledText
-          className="font-space text-sm font-bold flex-1 mr-2"
-          numberOfLines={1}
-        >
+      <StyledView className="min-h-[40px]">
+        <StyledText className="font-space text-sm font-bold mb-1">
           {item.name}
         </StyledText>
         <StyledView className="flex-row items-center">
