@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Image, Pressable, Animated } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { NeuButton } from "../functional/NeuButton";
 import { router } from "expo-router";
 
@@ -20,11 +20,68 @@ export const UserScreen = () => {
     { name: "Creativity", value: 78 },
   ];
 
+  const [challenges, setChallenges] = useState([
+    {
+      id: 1,
+      title: "Chat with Zoey for 5 minutes",
+      coins: 50,
+      completed: true,
+    },
+    {
+      id: 2,
+      title: "Complete a wellness session",
+      coins: 75,
+      completed: false,
+    },
+    { id: 3, title: "Save a memory", coins: 25, completed: true },
+  ]);
+
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [animation] = useState(new Animated.Value(0));
+
+  const toggleExpand = () => {
+    const toValue = isExpanded ? 0 : 1;
+    setIsExpanded(!isExpanded);
+    Animated.spring(animation, {
+      toValue,
+      useNativeDriver: false,
+      friction: 10,
+    }).start();
+  };
+
+  const toggleChallenge = (id: number) => {
+    setChallenges(
+      challenges.map((challenge) =>
+        challenge.id === id
+          ? { ...challenge, completed: !challenge.completed }
+          : challenge
+      )
+    );
+  };
+
+  const completedCount = challenges.filter((c) => c.completed).length;
+  const canClaimRewards = completedCount > 0;
+
+  const handleClaimRewards = () => {
+    // Here you would add logic to credit coins and reset challenges
+    console.log("Claiming rewards...");
+  };
+
+  const maxHeight = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 300], // Adjust this value based on your content
+  });
+
+  const rotateArrow = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "180deg"],
+  });
+
   return (
     <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
       <StyledView className="flex-1 px-4 pt-2">
         {/* Main Card */}
-        <StyledView className="flex-1">
+        <StyledView className="flex-1 space-y-4">
           <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
             {/* Header Section */}
             <StyledView className="flex-row items-center justify-between mb-4">
@@ -93,6 +150,93 @@ export const UserScreen = () => {
                 </StyledView>
               ))}
             </StyledView>
+          </StyledView>
+
+          {/* Daily Challenges Card */}
+          <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            {/* Header - Always visible */}
+            <StyledPressable
+              onPress={toggleExpand}
+              className="flex-row items-center justify-between"
+            >
+              <StyledView className="flex-row items-center space-x-2">
+                <StyledText className="font-space text-xl font-bold">
+                  Daily Challenges
+                </StyledText>
+                <StyledView className="bg-[#FFE5EC] px-3 py-1 rounded-xl border-2 border-black">
+                  <StyledText className="font-space text-sm">
+                    {completedCount}/{challenges.length}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+              <Animated.View style={{ transform: [{ rotate: rotateArrow }] }}>
+                <Feather name="chevron-down" size={24} color="black" />
+              </Animated.View>
+            </StyledPressable>
+
+            {/* Expandable Content */}
+            <Animated.View style={{ maxHeight, overflow: "hidden" }}>
+              <StyledView className="space-y-2.5 mt-4">
+                {challenges.map((challenge) => (
+                  <StyledPressable
+                    key={challenge.id}
+                    onPress={() => toggleChallenge(challenge.id)}
+                    className={`p-3 border-2 border-black rounded-xl active:scale-[0.98] ${
+                      challenge.completed ? "bg-[#DCFCE7]" : "bg-[#FFE5EC]"
+                    }`}
+                  >
+                    <StyledView className="flex-row items-center justify-between">
+                      <StyledView className="flex-row items-center flex-1 mr-3">
+                        <StyledView
+                          className={`w-5 h-5 rounded-md border-2 border-black items-center justify-center ${
+                            challenge.completed ? "bg-[#86EFAC]" : "bg-white"
+                          }`}
+                        >
+                          {challenge.completed && (
+                            <Ionicons
+                              name="checkmark-sharp"
+                              size={14}
+                              color="black"
+                            />
+                          )}
+                        </StyledView>
+                        <StyledText
+                          className={`ml-2.5 font-space text-sm ${
+                            challenge.completed ? "line-through opacity-70" : ""
+                          }`}
+                        >
+                          {challenge.title}
+                        </StyledText>
+                      </StyledView>
+                      <StyledView
+                        className={`px-2.5 py-0.5 rounded-lg border-2 border-black ${
+                          challenge.completed ? "bg-[#86EFAC]" : "bg-white"
+                        }`}
+                      >
+                        <StyledText className="font-space text-xs">
+                          +{challenge.coins}
+                        </StyledText>
+                      </StyledView>
+                    </StyledView>
+                  </StyledPressable>
+                ))}
+
+                <StyledPressable
+                  onPress={handleClaimRewards}
+                  className={`mt-4 flex-row items-center justify-center p-3.5 rounded-xl border-2 border-black ${
+                    canClaimRewards
+                      ? "bg-[#FFB5C5] opacity-100"
+                      : "bg-[#FFE5EC] opacity-50"
+                  }`}
+                  disabled={!canClaimRewards}
+                >
+                  <Feather name="award" size={18} color="black" />
+                  <StyledText className="font-space text-sm ml-2">
+                    Claim Daily Rewards
+                  </StyledText>
+                </StyledPressable>
+              </StyledView>
+            </Animated.View>
           </StyledView>
         </StyledView>
 
