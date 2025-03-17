@@ -171,25 +171,19 @@ export const UserScreen = () => {
                 {/* Name and Level */}
                 <StyledView className="ml-3">
                   <StyledText className="font-doodle text-2xl">Zoey</StyledText>
-                  <StyledView className="flex-row items-center mt-1">
-                    <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl px-2 py-0.5 mr-2 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
-                      <StyledText className="font-space text-xs">
-                        ✨ Level
-                      </StyledText>
-                    </StyledPressable>
-                    <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl px-2 py-0.5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
-                      <StyledText className="font-space text-xs">
-                        Level Up
-                      </StyledText>
-                    </StyledPressable>
-                  </StyledView>
+                  <StyledView className="flex-row items-center mt-1"></StyledView>
                 </StyledView>
               </StyledView>
 
               {/* Coins */}
-              <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]">
-                <StyledView className="w-3.5 h-3.5 bg-yellow-400 rounded-full border border-black" />
-              </StyledPressable>
+              <StyledView className="flex-row items-center">
+                <StyledText className="font-space text-lg mr-2">
+                  2,450
+                </StyledText>
+                <StyledPressable className="bg-[#FFB5C5] border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]">
+                  <StyledView className="w-3.5 h-3.5 bg-yellow-400 rounded-full border border-black" />
+                </StyledPressable>
+              </StyledView>
             </StyledView>
 
             {/* Attributes Section */}
