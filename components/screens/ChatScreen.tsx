@@ -119,6 +119,20 @@ export const ChatScreen = () => {
   const [isModePickerVisible, setIsModePickerVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  // Reset messages when mode changes
+  useEffect(() => {
+    setMessages([
+      {
+        id: "1",
+        text: `Hi! I'm Zoey in ${selectedMode.name} mode. How can I help you today?`,
+        isUser: false,
+        timestamp: new Date(),
+      },
+    ]);
+    setInputText("");
+    setIsTyping(false);
+  }, [selectedMode]);
+
   const scrollToBottom = () => {
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -195,26 +209,33 @@ export const ChatScreen = () => {
       <StyledView
         className={`px-4 py-3 max-w-[80%] border-2 border-black ${
           message.isUser
-            ? "bg-[#FFB5C5] rounded-tl-xl rounded-tr-xl rounded-bl-xl"
+            ? `rounded-tl-xl rounded-tr-xl rounded-bl-xl`
             : "bg-white rounded-tl-xl rounded-tr-xl rounded-br-xl"
         } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
+        style={{
+          backgroundColor: message.isUser ? currentTheme.main : "white",
+        }}
       >
         <Markdown
           style={{
             body: {
               fontFamily: "SpaceGrotesk_400Regular",
               fontSize: 16,
-              color: "#000000",
+              color: message.isUser ? "#000000" : "#000000",
             },
             code: {
               fontFamily: "SpaceGrotesk_400Regular",
-              backgroundColor: "#F0F0F0",
+              backgroundColor: message.isUser
+                ? currentTheme.lighter
+                : "#F0F0F0",
               padding: 4,
               borderRadius: 4,
             },
             code_inline: {
               fontFamily: "SpaceGrotesk_400Regular",
-              backgroundColor: "#F0F0F0",
+              backgroundColor: message.isUser
+                ? currentTheme.lighter
+                : "#F0F0F0",
               padding: 2,
               borderRadius: 4,
             },
