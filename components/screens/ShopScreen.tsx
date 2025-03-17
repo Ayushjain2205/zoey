@@ -5,6 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import { useCoins } from "../../context/CoinsContext";
+import { NeuButton } from "../functional/NeuButton";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -123,13 +125,20 @@ const abilities: ShopItem[] = [
 
 export const ShopScreen = () => {
   const { currentTheme } = useTheme();
+  const { coins, spendCoins } = useCoins();
   const [selectedCategory, setSelectedCategory] =
     useState<Category>("abilities");
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
+  const [showInsufficientCoins, setShowInsufficientCoins] = useState(false);
 
   const handlePurchase = (item: ShopItem) => {
-    // TODO: Implement actual purchase logic
-    setSelectedItem(null);
+    if (spendCoins(item.price)) {
+      // Purchase successful
+      setSelectedItem(null);
+    } else {
+      // Not enough coins
+      setShowInsufficientCoins(true);
+    }
   };
 
   const renderPurchaseModal = () => (
@@ -257,7 +266,9 @@ export const ShopScreen = () => {
           </StyledView>
           <StyledView className="flex-row items-center">
             <StyledView className="w-4 h-4 bg-yellow-400 rounded-full border border-black mr-1.5" />
-            <StyledText className="font-space text-lg">2,450</StyledText>
+            <StyledText className="font-space text-lg">
+              {coins.toLocaleString()}
+            </StyledText>
           </StyledView>
         </StyledView>
 
@@ -308,6 +319,33 @@ export const ShopScreen = () => {
 
       {/* Purchase Modal */}
       {renderPurchaseModal()}
+
+      {/* Insufficient Coins Modal */}
+      <Modal
+        transparent
+        visible={showInsufficientCoins}
+        animationType="fade"
+        onRequestClose={() => setShowInsufficientCoins(false)}
+      >
+        <StyledView className="flex-1 items-center justify-center bg-black/50">
+          <StyledView className="bg-white border-2 border-black rounded-xl p-6 w-[80%] items-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            <StyledText className="font-space text-xl text-center mb-4">
+              Not Enough Coins! 😢
+            </StyledText>
+            <StyledText className="font-space text-center mb-6">
+              You need more coins to purchase this item. Complete some
+              challenges to earn more coins!
+            </StyledText>
+            <NeuButton
+              onPress={() => setShowInsufficientCoins(false)}
+              width="100%"
+              color={currentTheme.main}
+            >
+              <StyledText className="font-space text-lg">Got it!</StyledText>
+            </NeuButton>
+          </StyledView>
+        </StyledView>
+      </Modal>
     </StyledSafeAreaView>
   );
 };

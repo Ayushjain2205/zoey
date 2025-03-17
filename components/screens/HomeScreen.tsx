@@ -4,6 +4,7 @@ import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import { useCoins } from "../../context/CoinsContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -13,6 +14,7 @@ const StyledSafeAreaView = styled(SafeAreaView);
 
 export const HomeScreen = () => {
   const { currentTheme } = useTheme();
+  const { coins } = useCoins();
 
   return (
     <StyledSafeAreaView
@@ -27,7 +29,9 @@ export const HomeScreen = () => {
           </StyledText>
           <StyledView className="flex-row items-center">
             <StyledView className="w-4 h-4 bg-yellow-400 rounded-full border border-black mr-1.5" />
-            <StyledText className="font-space text-lg">2,450</StyledText>
+            <StyledText className="font-space text-lg">
+              {coins.toLocaleString()}
+            </StyledText>
           </StyledView>
         </StyledView>
 

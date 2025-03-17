@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, Image, Pressable, Animated } from "react-native";
+import { View, Text, Image, Pressable, Animated, Modal } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { NeuButton } from "../functional/NeuButton";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import { useCoins } from "../../context/CoinsContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -15,6 +16,7 @@ const StyledImage = styled(Image);
 
 export const UserScreen = () => {
   const { currentTheme, selectedMode } = useTheme();
+  const { coins, addCoins } = useCoins();
   const attributes = [
     { name: "Empathy", value: 85 },
     { name: "Wisdom", value: 68 },
@@ -79,6 +81,12 @@ export const UserScreen = () => {
   const [challengesAnimation] = useState(new Animated.Value(0));
   const [streaksAnimation] = useState(new Animated.Value(0));
 
+  const [showRewardModal, setShowRewardModal] = useState(false);
+  const [lastCompletedChallenge, setLastCompletedChallenge] = useState<{
+    title: string;
+    coins: number;
+  } | null>(null);
+
   const toggleSection = (section: "challenges" | "streaks") => {
     const toValue = expandedSection === section ? 0 : 1;
 
@@ -109,11 +117,25 @@ export const UserScreen = () => {
 
   const toggleChallenge = (id: number) => {
     setChallenges(
-      challenges.map((challenge) =>
-        challenge.id === id
-          ? { ...challenge, completed: !challenge.completed }
-          : challenge
-      )
+      challenges.map((challenge) => {
+        if (challenge.id === id) {
+          const wasCompleted = challenge.completed;
+          const newCompleted = !wasCompleted;
+
+          // Show reward modal when completing a challenge
+          if (!wasCompleted && newCompleted) {
+            setLastCompletedChallenge({
+              title: challenge.title,
+              coins: challenge.coins,
+            });
+            addCoins(challenge.coins);
+            setShowRewardModal(true);
+          }
+
+          return { ...challenge, completed: newCompleted };
+        }
+        return challenge;
+      })
     );
   };
 
@@ -187,7 +209,7 @@ export const UserScreen = () => {
               {/* Coins */}
               <StyledView className="flex-row items-center">
                 <StyledText className="font-space text-lg mr-2">
-                  2,450
+                  {coins.toLocaleString()}
                 </StyledText>
                 <StyledPressable
                   className="border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
@@ -426,6 +448,38 @@ export const UserScreen = () => {
           </NeuButton>
         </StyledView>
       </StyledView>
+
+      {/* Reward Modal */}
+      <Modal
+        transparent
+        visible={showRewardModal}
+        animationType="fade"
+        onRequestClose={() => setShowRewardModal(false)}
+      >
+        <StyledView className="flex-1 items-center justify-center bg-black/50">
+          <StyledView className="bg-white border-2 border-black rounded-xl p-6 w-[80%] items-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            <StyledText className="font-space text-2xl text-center mb-4">
+              Challenge Completed! 🎉
+            </StyledText>
+            <StyledText className="font-space text-lg text-center mb-6">
+              {lastCompletedChallenge?.title}
+            </StyledText>
+            <StyledView className="flex-row items-center mb-6">
+              <StyledView className="w-6 h-6 bg-yellow-400 rounded-full border border-black mr-2" />
+              <StyledText className="font-space text-2xl">
+                +{lastCompletedChallenge?.coins}
+              </StyledText>
+            </StyledView>
+            <NeuButton
+              onPress={() => setShowRewardModal(false)}
+              width="100%"
+              color={currentTheme.main}
+            >
+              <StyledText className="font-space text-lg">Awesome!</StyledText>
+            </NeuButton>
+          </StyledView>
+        </StyledView>
+      </Modal>
     </StyledSafeAreaView>
   );
 };

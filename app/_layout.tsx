@@ -9,6 +9,7 @@ import SplashScreen from "../components/screens/SplashScreen";
 import { View } from "react-native";
 import { styled } from "nativewind";
 import { ThemeProvider } from "../context/ThemeContext";
+import { CoinsProvider } from "../context/CoinsContext";
 
 const StyledView = styled(View);
 
@@ -38,28 +39,30 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <PrivyProvider
-        appId={Constants.expoConfig?.extra?.privyAppId}
-        clientId={Constants.expoConfig?.extra?.privyClientId}
-        supportedChains={[scrollSepolia]}
-        config={{
-          embedded: {
-            ethereum: {
-              createOnLogin: "users-without-wallets",
+      <CoinsProvider>
+        <PrivyProvider
+          appId={Constants.expoConfig?.extra?.privyAppId}
+          clientId={Constants.expoConfig?.extra?.privyClientId}
+          supportedChains={[scrollSepolia]}
+          config={{
+            embedded: {
+              ethereum: {
+                createOnLogin: "users-without-wallets",
+              },
             },
-          },
-        }}
-      >
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen
-            name="index"
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack>
-        <PrivyElements />
-      </PrivyProvider>
+          }}
+        >
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="index"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+          <PrivyElements />
+        </PrivyProvider>
+      </CoinsProvider>
     </ThemeProvider>
   );
 }
