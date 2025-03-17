@@ -128,7 +128,10 @@ export const WalletScreen = () => {
 
           {/* Logout Button */}
           <StyledPressable
-            onPress={logout}
+            onPress={() => {
+              logout();
+              router.replace("/user");
+            }}
             className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
             style={{ backgroundColor: currentTheme.main }}
           >
