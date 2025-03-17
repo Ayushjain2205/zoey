@@ -39,14 +39,70 @@ export const UserScreen = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [animation] = useState(new Animated.Value(0));
 
-  const toggleExpand = () => {
-    const toValue = isExpanded ? 0 : 1;
-    setIsExpanded(!isExpanded);
-    Animated.spring(animation, {
-      toValue,
-      useNativeDriver: false,
-      friction: 10,
-    }).start();
+  const [streaks] = useState([
+    {
+      id: 1,
+      category: "Workout",
+      icon: "activity",
+      streak: 5,
+      color: "#FCA5A5", // Light red
+    },
+    {
+      id: 2,
+      category: "Meditation",
+      icon: "moon",
+      streak: 12,
+      color: "#93C5FD", // Light blue
+    },
+    {
+      id: 3,
+      category: "Journaling",
+      icon: "edit-3",
+      streak: 3,
+      color: "#86EFAC", // Light green
+    },
+    {
+      id: 4,
+      category: "Reading",
+      icon: "book-open",
+      streak: 7,
+      color: "#FCD34D", // Light yellow
+    },
+  ]);
+
+  // Track which section is expanded
+  const [expandedSection, setExpandedSection] = useState<
+    "challenges" | "streaks" | null
+  >(null);
+  const [challengesAnimation] = useState(new Animated.Value(0));
+  const [streaksAnimation] = useState(new Animated.Value(0));
+
+  const toggleSection = (section: "challenges" | "streaks") => {
+    const toValue = expandedSection === section ? 0 : 1;
+
+    // Collapse the other section if it's open
+    if (expandedSection && expandedSection !== section) {
+      Animated.spring(
+        section === "challenges" ? streaksAnimation : challengesAnimation,
+        {
+          toValue: 0,
+          useNativeDriver: false,
+          friction: 10,
+        }
+      ).start();
+    }
+
+    // Expand/collapse the clicked section
+    Animated.spring(
+      section === "challenges" ? challengesAnimation : streaksAnimation,
+      {
+        toValue,
+        useNativeDriver: false,
+        friction: 10,
+      }
+    ).start();
+
+    setExpandedSection(expandedSection === section ? null : section);
   };
 
   const toggleChallenge = (id: number) => {
@@ -67,12 +123,22 @@ export const UserScreen = () => {
     console.log("Claiming rewards...");
   };
 
-  const maxHeight = animation.interpolate({
+  const challengesMaxHeight = challengesAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 300], // Adjust this value based on your content
+    outputRange: [0, 270],
   });
 
-  const rotateArrow = animation.interpolate({
+  const streaksMaxHeight = streaksAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 300],
+  });
+
+  const challengesRotateArrow = challengesAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "180deg"],
+  });
+
+  const streaksRotateArrow = streaksAnimation.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "180deg"],
   });
@@ -156,7 +222,7 @@ export const UserScreen = () => {
           <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
             {/* Header - Always visible */}
             <StyledPressable
-              onPress={toggleExpand}
+              onPress={() => toggleSection("challenges")}
               className="flex-row items-center justify-between"
             >
               <StyledView className="flex-row items-center space-x-2">
@@ -169,13 +235,17 @@ export const UserScreen = () => {
                   </StyledText>
                 </StyledView>
               </StyledView>
-              <Animated.View style={{ transform: [{ rotate: rotateArrow }] }}>
+              <Animated.View
+                style={{ transform: [{ rotate: challengesRotateArrow }] }}
+              >
                 <Feather name="chevron-down" size={24} color="black" />
               </Animated.View>
             </StyledPressable>
 
             {/* Expandable Content */}
-            <Animated.View style={{ maxHeight, overflow: "hidden" }}>
+            <Animated.View
+              style={{ maxHeight: challengesMaxHeight, overflow: "hidden" }}
+            >
               <StyledView className="space-y-2.5 mt-4">
                 {challenges.map((challenge) => (
                   <StyledPressable
@@ -223,18 +293,70 @@ export const UserScreen = () => {
 
                 <StyledPressable
                   onPress={handleClaimRewards}
-                  className={`mt-4 flex-row items-center justify-center p-3.5 rounded-xl border-2 border-black ${
+                  className={`mt-2 flex-row items-center justify-center py-2.5 px-4 rounded-xl border-2 border-black ${
                     canClaimRewards
-                      ? "bg-[#FFB5C5] opacity-100"
+                      ? "bg-[#FFB5C5] opacity-100 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
                       : "bg-[#FFE5EC] opacity-50"
                   }`}
                   disabled={!canClaimRewards}
                 >
-                  <Feather name="award" size={18} color="black" />
-                  <StyledText className="font-space text-sm ml-2">
+                  <Feather name="award" size={16} color="black" />
+                  <StyledText className="font-space text-sm ml-1.5">
                     Claim Daily Rewards
                   </StyledText>
                 </StyledPressable>
+              </StyledView>
+            </Animated.View>
+          </StyledView>
+
+          {/* Streaks Card */}
+          <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            {/* Header - Always visible */}
+            <StyledPressable
+              onPress={() => toggleSection("streaks")}
+              className="flex-row items-center justify-between"
+            >
+              <StyledText className="font-space text-xl font-bold">
+                Streaks
+              </StyledText>
+              <Animated.View
+                style={{ transform: [{ rotate: streaksRotateArrow }] }}
+              >
+                <Feather name="chevron-down" size={24} color="black" />
+              </Animated.View>
+            </StyledPressable>
+
+            {/* Expandable Content */}
+            <Animated.View
+              style={{ maxHeight: streaksMaxHeight, overflow: "hidden" }}
+            >
+              <StyledView className="flex-row flex-wrap justify-between mt-4">
+                {streaks.map((streak) => (
+                  <StyledView key={streak.id} className="w-[48%] mb-4">
+                    <StyledView
+                      className="border-2 border-black rounded-xl p-3 active:scale-[0.98]"
+                      style={{ backgroundColor: streak.color }}
+                    >
+                      <StyledView className="flex-row items-center justify-between mb-2">
+                        <StyledView className="bg-white w-8 h-8 rounded-lg border-2 border-black items-center justify-center">
+                          <Feather
+                            name={streak.icon as any}
+                            size={18}
+                            color="black"
+                          />
+                        </StyledView>
+                        <StyledView className="bg-white px-2 py-1 rounded-lg border-2 border-black">
+                          <StyledText className="font-space text-xs">
+                            🔥 {streak.streak}
+                          </StyledText>
+                        </StyledView>
+                      </StyledView>
+                      <StyledText className="font-space text-sm mt-1">
+                        {streak.category}
+                      </StyledText>
+                    </StyledView>
+                  </StyledView>
+                ))}
               </StyledView>
             </Animated.View>
           </StyledView>
