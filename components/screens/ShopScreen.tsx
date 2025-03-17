@@ -176,7 +176,8 @@ export const ShopScreen = () => {
                     </StyledText>
                   </StyledPressable>
                   <StyledPressable
-                    className="flex-1 bg-[#FFB5C5] py-3 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+                    className="flex-1 py-3 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+                    style={{ backgroundColor: currentTheme.main }}
                     onPress={() => handlePurchase(selectedItem)}
                   >
                     <StyledText className="font-space text-center font-bold">
@@ -272,12 +273,15 @@ export const ShopScreen = () => {
               className={`flex-1 py-2 px-4 border-2 border-black rounded-xl mr-2 last:mr-0`}
               style={{
                 backgroundColor:
-                  category.id === "abilities" ? currentTheme.main : "white",
+                  selectedCategory === category.id
+                    ? currentTheme.main
+                    : "white",
                 shadowOffset: { width: 3, height: 3 },
                 shadowOpacity: 1,
                 shadowRadius: 0,
                 shadowColor: "#000",
               }}
+              onPress={() => setSelectedCategory(category.id as Category)}
             >
               <StyledText className="font-space text-center">
                 {category.label}
