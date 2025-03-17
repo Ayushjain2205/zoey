@@ -27,6 +27,11 @@ import {
   handleCoachMessage,
   WorkoutTemplate,
 } from "../coach/CoachTemplates";
+import {
+  ProductGrid,
+  handleShopperMessage,
+  ProductCollection,
+} from "../shopper/ShopperTemplates";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -112,6 +117,7 @@ interface Message {
   isUser: boolean;
   timestamp: Date;
   workoutTemplate?: WorkoutTemplate;
+  productCollection?: ProductCollection;
 }
 
 const modeIntroMessages: Record<ChatMode, string> = {
@@ -348,6 +354,32 @@ export const ChatScreen = () => {
       }
     }
 
+    // Special handling for shopper mode
+    if (selectedMode.name === "SHOPPER") {
+      const shopperResponse = handleShopperMessage(text);
+      if (shopperResponse) {
+        setTimeout(() => {
+          const response: Message = {
+            id: (Date.now() + 1).toString(),
+            text:
+              shopperResponse.type === "message"
+                ? (shopperResponse.content as string)
+                : "PRODUCT_COLLECTION",
+            isUser: false,
+            timestamp: new Date(),
+            productCollection:
+              shopperResponse.type === "products"
+                ? (shopperResponse.content as ProductCollection)
+                : undefined,
+          };
+          setMessages((prev) => [...prev, response]);
+          setIsTyping(false);
+          scrollToBottom();
+        }, 1000);
+        return;
+      }
+    }
+
     try {
       // Convert messages to OpenAI format
       const openAIMessages: OpenAIMessage[] = messages.map((msg) => ({
@@ -411,6 +443,21 @@ export const ChatScreen = () => {
       return (
         <StyledView key={message.id} className="mb-4">
           <StreakTracker currentTheme={currentTheme} />
+        </StyledView>
+      );
+    }
+
+    if (
+      !message.isUser &&
+      message.text === "PRODUCT_COLLECTION" &&
+      message.productCollection
+    ) {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <ProductGrid
+            collection={message.productCollection}
+            currentTheme={currentTheme}
+          />
         </StyledView>
       );
     }
