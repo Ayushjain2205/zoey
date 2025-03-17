@@ -11,7 +11,7 @@ import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-
+import { useTheme } from "../../context/ThemeContext";
 import {
   usePrivy,
   useEmbeddedEthereumWallet,
@@ -45,52 +45,20 @@ const toMainIdentifier = (x: PrivyUser["linked_accounts"][number]) => {
 };
 
 export const WalletScreen = () => {
-  const [chainId, setChainId] = useState("1");
-  const [signedMessages, setSignedMessages] = useState<string[]>([]);
-
+  const { currentTheme } = useTheme();
   const { logout, user } = usePrivy();
-
-  const { wallets, create } = useEmbeddedEthereumWallet();
   const account = getUserEmbeddedEthereumWallet(user);
-
-  const signMessage = useCallback(
-    async (provider: PrivyEmbeddedWalletProvider) => {
-      try {
-        const message = await provider.request({
-          method: "personal_sign",
-          params: [`0x0${Date.now()}`, account?.address],
-        });
-        if (message) {
-          setSignedMessages((prev) => prev.concat(message));
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    [account?.address]
-  );
-
-  const switchChain = useCallback(
-    async (provider: PrivyEmbeddedWalletProvider, id: string) => {
-      try {
-        await provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: id }],
-        });
-        alert(`Chain switched to ${id} successfully`);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    [account?.address]
-  );
 
   if (!user) {
     return null;
   }
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-[#FFE5EC]" edges={["top"]}>
+    <StyledSafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: currentTheme.light }}
+      edges={["top"]}
+    >
       <StyledView className="flex-1 px-4">
         {/* Header with back button */}
         <StyledView className="flex-row items-center py-4">
@@ -100,14 +68,77 @@ export const WalletScreen = () => {
           >
             <Feather name="arrow-left" size={20} color="black" />
           </StyledPressable>
-          <StyledText className="font-doodle text-2xl ml-4">Wallet</StyledText>
+          <StyledText className="font-space text-2xl ml-4">Wallet</StyledText>
         </StyledView>
 
         {/* Wallet content */}
-        <StyledView className="flex-1 bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-          <StyledText className="font-space text-center text-gray-500">
-            Coming soon: Manage your coins and rewards!
-          </StyledText>
+        <StyledView className="flex-1 space-y-4">
+          {/* Wallet Address Card */}
+          <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            <StyledText className="font-space text-sm text-gray-600 mb-2">
+              Your Wallet Address
+            </StyledText>
+            <StyledView className="flex-row items-center justify-between">
+              <StyledText className="font-space text-sm flex-1 mr-2">
+                {account?.address || "No wallet connected"}
+              </StyledText>
+              <StyledPressable
+                onPress={() => {
+                  // Copy address to clipboard
+                  if (account?.address) {
+                    // TODO: Implement clipboard copy
+                    alert("Address copied to clipboard!");
+                  }
+                }}
+                className="bg-white border-2 border-black rounded-lg p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px]"
+              >
+                <Feather name="copy" size={16} color="black" />
+              </StyledPressable>
+            </StyledView>
+          </StyledView>
+
+          {/* Action Buttons */}
+          <StyledView className="flex-row space-x-4">
+            <StyledPressable
+              onPress={() => {}}
+              className="flex-1 bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
+              style={{ backgroundColor: currentTheme.main }}
+            >
+              <StyledView className="flex-row items-center justify-center">
+                <Feather name="plus-circle" size={20} color="black" />
+                <StyledText className="font-space text-lg ml-2">
+                  Add Funds
+                </StyledText>
+              </StyledView>
+            </StyledPressable>
+
+            <StyledPressable
+              onPress={() => {}}
+              className="flex-1 bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
+              style={{ backgroundColor: currentTheme.main }}
+            >
+              <StyledView className="flex-row items-center justify-center">
+                <Feather name="arrow-up-circle" size={20} color="black" />
+                <StyledText className="font-space text-lg ml-2">
+                  Withdraw
+                </StyledText>
+              </StyledView>
+            </StyledPressable>
+          </StyledView>
+
+          {/* Logout Button */}
+          <StyledPressable
+            onPress={logout}
+            className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
+            style={{ backgroundColor: currentTheme.main }}
+          >
+            <StyledView className="flex-row items-center justify-center">
+              <Feather name="log-out" size={20} color="black" />
+              <StyledText className="font-space text-lg ml-2">
+                Logout
+              </StyledText>
+            </StyledView>
+          </StyledPressable>
         </StyledView>
       </StyledView>
     </StyledSafeAreaView>
