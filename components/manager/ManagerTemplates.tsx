@@ -3,92 +3,73 @@ import { View, Text, Pressable } from "react-native";
 import { styled } from "nativewind";
 import { Feather } from "@expo/vector-icons";
 import { ThemeColors } from "../../context/ThemeContext";
+import { Meeting, DaySchedule } from "../../types/shared";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledPressable = styled(Pressable);
 
-// Types
-export interface Meeting {
-  id: string;
-  title: string;
-  time: string;
-  duration: string;
-  isOnline: boolean;
-  participants: string[];
-  location?: string;
-  meetingLink?: string;
-}
-
-export interface DaySchedule {
-  date: string;
-  sleepTime: string;
-  wakeTime: string;
-  activities: {
-    time: string;
-    activity: string;
-    duration: number;
-  }[];
-  meetings: Meeting[];
-}
-
 // Sample schedule
 export const todaySchedule: DaySchedule = {
-  date: new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  }),
-  sleepTime: "10:00 PM",
-  wakeTime: "06:00 AM",
+  date: "2024-03-20",
+  sleepTime: "23:00",
+  wakeTime: "07:00",
   activities: [
     {
-      time: "06:00 AM",
+      time: "07:30",
       activity: "Morning Exercise",
       duration: 30,
     },
     {
-      time: "07:00 AM",
-      activity: "Breakfast",
+      time: "12:30",
+      activity: "Lunch Break",
       duration: 60,
     },
   ],
   meetings: [
     {
       id: "1",
-      title: "Weekly Team Sync",
-      time: "09:30 AM",
-      duration: "30min",
+      title: "Team Standup",
+      time: "09:00",
+      startTime: 900,
+      endTime: 930,
+      duration: "30m",
       isOnline: true,
-      participants: ["Alex", "Sarah", "Mike"],
-      meetingLink: "zoom.us/j/123456789",
+      participants: ["John", "Sarah", "Mike"],
+      meetingLink: "https://zoom.us/j/123456789",
     },
     {
       id: "2",
       title: "Product Review",
-      time: "11:00 AM",
+      time: "11:00",
+      startTime: 1100,
+      endTime: 1200,
       duration: "1h",
       isOnline: false,
+      participants: ["Product Team", "Stakeholders"],
       location: "Conference Room A",
-      participants: ["John", "Emma", "David"],
     },
     {
       id: "3",
-      title: "Client Presentation",
-      time: "02:00 PM",
-      duration: "45min",
+      title: "Client Meeting",
+      time: "14:00",
+      startTime: 1400,
+      endTime: 1500,
+      duration: "1h",
       isOnline: true,
-      participants: ["Client Team", "Marketing"],
-      meetingLink: "meet.google.com/abc-defg-hij",
+      participants: ["Client", "Account Manager"],
+      meetingLink: "https://meet.google.com/abc-def-ghi",
     },
     {
       id: "4",
-      title: "Design Workshop",
-      time: "04:00 PM",
-      duration: "1h 30min",
+      title: "Sprint Planning",
+      time: "16:00",
+      startTime: 1600,
+      endTime: 1700,
+      duration: "1h",
       isOnline: false,
-      location: "Design Lab",
-      participants: ["Design Team", "PM"],
+      participants: ["Development Team", "Product Owner"],
+      location: "Conference Room B",
     },
   ],
 };

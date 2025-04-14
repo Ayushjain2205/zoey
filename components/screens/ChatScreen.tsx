@@ -27,6 +27,7 @@ import {
   legWorkout,
   handleCoachMessage,
   WorkoutTemplate,
+  Exercise,
 } from "../coach/CoachTemplates";
 import {
   ProductGrid,
@@ -62,43 +63,6 @@ interface ThemeColors {
   lighter: string;
 }
 
-interface Exercise {
-  name: string;
-  sets: number;
-  reps: string;
-  rest: string;
-  icon: string;
-}
-
-interface WorkoutTemplate {
-  title: string;
-  description: string;
-  exercises: Exercise[];
-  tips: string[];
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  image: any;
-  price: number;
-  rating: number;
-  reviews: number;
-  isPrime: boolean;
-  nutrition: {
-    calories: number;
-    protein: string;
-    carbs: string;
-    fats: string;
-  };
-}
-
-interface ProductCollection {
-  title: string;
-  products: Product[];
-}
-
 interface Activity {
   time: string;
   activity: string;
@@ -106,17 +70,14 @@ interface Activity {
 }
 
 interface Meeting {
-  time: string;
+  id: string;
   title: string;
+  startTime: string;
+  endTime: string;
+  time: string;
   duration: number;
-}
-
-interface DaySchedule {
-  date: string;
-  sleepTime: string;
-  wakeTime: string;
-  activities: Activity[];
-  meetings: Meeting[];
+  isOnline: boolean;
+  participants: string[];
 }
 
 interface Message {
@@ -124,18 +85,18 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
-  workoutTemplate?: import("../coach/CoachTemplates").WorkoutTemplate;
-  productCollection?: import("../coach/CoachTemplates").ProductCollection;
-  daySchedule?: import("../manager/ManagerTemplates").DaySchedule;
+  workoutTemplate?: WorkoutTemplate;
+  productCollection?: ProductCollection;
+  daySchedule?: DaySchedule;
   image?: string;
 }
 
 interface SimulatedResponse {
   text: string;
   delay?: number;
-  workoutTemplate?: import("../coach/CoachTemplates").WorkoutTemplate;
-  productCollection?: import("../coach/CoachTemplates").ProductCollection;
-  daySchedule?: import("../manager/ManagerTemplates").DaySchedule;
+  workoutTemplate?: WorkoutTemplate;
+  productCollection?: ProductCollection;
+  daySchedule?: DaySchedule;
 }
 
 interface SimulatedFlow {
@@ -681,6 +642,49 @@ export const ChatScreen = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleImageResponse = async () => {
+    // Show typing indicator
+    setIsTyping(true);
+
+    // Get next response in the flow
+    const currentStep = conversationSteps[selectedMode.name];
+    const flow = mockFlows[selectedMode.name];
+
+    if (currentStep < flow.responses.length) {
+      const response = flow.responses[currentStep];
+      await new Promise((resolve) =>
+        setTimeout(resolve, response.delay || 1000)
+      );
+
+      const zoeyResponse: Message = {
+        id: Date.now().toString(),
+        text: response.text,
+        isUser: false,
+        timestamp: new Date(),
+        workoutTemplate: response.workoutTemplate,
+        productCollection: response.productCollection,
+        daySchedule: response.daySchedule,
+      };
+
+      setMessages((prev) => [...prev, zoeyResponse]);
+      conversationSteps[selectedMode.name]++;
+    } else {
+      // Reset the conversation if we've reached the end
+      conversationSteps[selectedMode.name] = 0;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const defaultResponse: Message = {
+        id: Date.now().toString(),
+        text: "I received your image! How can I help you further?",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, defaultResponse]);
+    }
+
+    setIsTyping(false);
+    scrollToBottom();
+  };
+
   const handleImagePicker = async () => {
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
@@ -711,6 +715,7 @@ export const ChatScreen = () => {
                 };
                 setMessages((prev) => [...prev, newMessage]);
                 scrollToBottom();
+                await handleImageResponse();
               }
             }
           } else if (buttonIndex === 2) {
@@ -735,6 +740,7 @@ export const ChatScreen = () => {
                 };
                 setMessages((prev) => [...prev, newMessage]);
                 scrollToBottom();
+                await handleImageResponse();
               }
             }
           }
@@ -762,6 +768,7 @@ export const ChatScreen = () => {
           };
           setMessages((prev) => [...prev, newMessage]);
           scrollToBottom();
+          await handleImageResponse();
         }
       }
     }
