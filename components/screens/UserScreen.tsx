@@ -18,10 +18,10 @@ export const UserScreen = () => {
   const { currentTheme, selectedMode } = useTheme();
   const { coins, addCoins } = useCoins();
   const attributes = [
-    { name: "Empathy", value: 85 },
-    { name: "Wisdom", value: 68 },
-    { name: "Energy", value: 92 },
-    { name: "Creativity", value: 78 },
+    { name: "Stamina", icon: "🔥", value: 85 },
+    { name: "Clarity", icon: "🧠", value: 68 },
+    { name: "Recovery", icon: "😴", value: 92 },
+    { name: "Fuel", icon: "🥗", value: 78 },
   ];
 
   const [challenges, setChallenges] = useState([
@@ -173,79 +173,63 @@ export const UserScreen = () => {
       style={{ backgroundColor: currentTheme.light }}
       edges={["top"]}
     >
-      <StyledView className="flex-1 px-4 pt-2">
+      <StyledView className="flex-1 px-4">
         {/* Main Card */}
         <StyledView className="flex-1 space-y-4">
-          <StyledView className="bg-white border-2 border-black rounded-xl p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-            {/* Header Section */}
-            <StyledView className="flex-row items-center justify-between mb-4">
-              {/* Profile and Level */}
-              <StyledView className="flex-row items-center">
+          <StyledView className="bg-white border-2 border-black rounded-xl p-5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            <StyledView className="flex-row">
+              {/* Left Section - Profile and Coins */}
+              <StyledView className="w-32">
                 {/* Profile Image */}
-                <StyledView className="relative">
-                  <StyledView className="w-20 h-20 border-2 border-black rounded-full overflow-hidden shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-                    <StyledImage
-                      source={selectedMode.image}
-                      className="w-full h-full"
-                      style={{ borderRadius: 9999 }}
-                      resizeMode="cover"
-                    />
-                  </StyledView>
+                <StyledView className="w-24 h-24 border-2 border-black rounded-full overflow-hidden">
+                  <StyledImage
+                    source={selectedMode.image}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                </StyledView>
+
+                {/* Coins */}
+                <StyledView className="flex-row items-center mt-4">
+                  <StyledView className="w-6 h-6 bg-yellow-400 rounded-full border-2 border-black mr-2" />
+                  <StyledText className="font-space text-base">
+                    {coins.toLocaleString()}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+
+              {/* Right Section - Attributes */}
+              <StyledView className="flex-1 justify-between">
+                {attributes.map((attribute) => (
                   <StyledView
-                    className="absolute -bottom-1 -right-1 w-6 h-6 border-2 border-black rounded-full items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                    style={{ backgroundColor: currentTheme.main }}
+                    key={attribute.name}
+                    className="flex-row items-center last:mb-0"
                   >
-                    <StyledText className="font-space text-xs">5</StyledText>
+                    <StyledView className="w-24 flex-row items-center">
+                      <StyledText className="font-space text-lg mr-2">
+                        {attribute.icon}
+                      </StyledText>
+                      <StyledText className="font-space text-sm">
+                        {attribute.name}
+                      </StyledText>
+                    </StyledView>
+                    <StyledView className="flex-1 flex-row items-center">
+                      <StyledView className="flex-1 h-4 bg-white rounded-full border-2 border-black overflow-hidden mr-3">
+                        <StyledView
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${attribute.value}%`,
+                            backgroundColor: currentTheme.main,
+                          }}
+                        />
+                      </StyledView>
+                      <StyledText className="font-space text-base w-8">
+                        {attribute.value}
+                      </StyledText>
+                    </StyledView>
                   </StyledView>
-                </StyledView>
-
-                {/* Name and Level */}
-                <StyledView className="ml-3">
-                  <StyledText className="font-doodle text-2xl">Zoey</StyledText>
-                  <StyledView className="flex-row items-center mt-1"></StyledView>
-                </StyledView>
+                ))}
               </StyledView>
-
-              {/* Coins */}
-              <StyledView className="flex-row items-center">
-                <StyledText className="font-space text-lg mr-2">
-                  {coins.toLocaleString()}
-                </StyledText>
-                <StyledPressable
-                  className="border-2 border-black rounded-xl w-8 h-8 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
-                  style={{ backgroundColor: currentTheme.main }}
-                >
-                  <StyledView className="w-3.5 h-3.5 bg-yellow-400 rounded-full border border-black" />
-                </StyledPressable>
-              </StyledView>
-            </StyledView>
-
-            {/* Attributes Section */}
-            <StyledView className="flex-row flex-wrap justify-between">
-              {attributes.map((attribute) => (
-                <StyledView
-                  key={attribute.name}
-                  className="w-[48%] mb-2 last:mb-0"
-                >
-                  <StyledView className="flex-row justify-between">
-                    <StyledText className="font-space text-xs">
-                      {attribute.name}
-                    </StyledText>
-                    <StyledText className="font-space text-xs">
-                      {attribute.value}
-                    </StyledText>
-                  </StyledView>
-                  <StyledView className="h-2 bg-white rounded-xl border-2 border-black overflow-hidden mt-0.5">
-                    <StyledView
-                      className="h-full rounded-xl"
-                      style={{
-                        width: `${attribute.value}%`,
-                        backgroundColor: currentTheme.main,
-                      }}
-                    />
-                  </StyledView>
-                </StyledView>
-              ))}
             </StyledView>
           </StyledView>
 
