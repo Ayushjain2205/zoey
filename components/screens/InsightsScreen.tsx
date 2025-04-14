@@ -28,7 +28,9 @@ type InsightCategory =
   | "Nutrition"
   | "Activity"
   | "Sleep"
-  | "Mental";
+  | "Mental"
+  | "Recovery"
+  | "Hormones";
 type TimelineFilter = "Today" | "Week" | "Month" | "Year";
 type InsightSource = "User" | "AI" | "Device";
 
@@ -52,10 +54,12 @@ interface Insight {
 
 const CATEGORIES: { id: InsightCategory; emoji: string; label: string }[] = [
   { id: "Overview", emoji: "🎯", label: "Overview" },
-  { id: "Nutrition", emoji: "🍽️", label: "Nutrition" },
-  { id: "Activity", emoji: "💪", label: "Activity" },
-  { id: "Sleep", emoji: "😴", label: "Sleep" },
+  { id: "Hormones", emoji: "🧬", label: "Hormones" },
   { id: "Mental", emoji: "🧠", label: "Mental" },
+  { id: "Sleep", emoji: "😴", label: "Sleep" },
+  { id: "Activity", emoji: "💪", label: "Activity" },
+  { id: "Nutrition", emoji: "🍽️", label: "Nutrition" },
+  { id: "Recovery", emoji: "💧", label: "Recovery" },
 ];
 
 const TIMELINES: { id: TimelineFilter; label: string }[] = [
@@ -65,32 +69,277 @@ const TIMELINES: { id: TimelineFilter; label: string }[] = [
   { id: "Year", label: "This Year" },
 ];
 
+const CATEGORY_ICONS = {
+  Activity: "💪",
+  Nutrition: "🍽",
+  Sleep: "😴",
+  Mental: "🧠",
+  Recovery: "💧",
+  Hormones: "🧬",
+};
+
 const MOCK_INSIGHTS: Insight[] = [
   {
     id: "1",
     category: "Activity",
-    title: "Better Sleep After Workouts",
-    description: "Your sleep duration increased by 38 mins on workout days.",
-    tags: ["Sleep", "Workout"],
+    title: "Skipped Workout → Mood Drop",
+    description: "Mood score dropped the next day after missing a workout",
+    tags: ["Workout", "Mood"],
     statImpact: {
-      recovery: 12,
-      stamina: 8,
+      clarity: -6,
     },
-    timestamp: new Date().toISOString(),
+    timestamp: "1d ago",
     source: "AI",
   },
   {
     id: "2",
     category: "Nutrition",
-    title: "Late Meals Affect Sleep",
-    description: "Eating after 8 PM correlates with 25% worse sleep quality.",
-    tags: ["Sleep", "Nutrition"],
+    title: "Heart Rate Spike After Eating",
+    description:
+      "Your heart rate increased by an average of 18 bpm after meals",
+    tags: ["Heart Rate", "Meals"],
     statImpact: {
-      recovery: -8,
-      clarity: -5,
+      stamina: 10,
     },
-    timestamp: new Date().toISOString(),
+    timestamp: "2d ago",
+    source: "Device",
+  },
+  {
+    id: "3",
+    category: "Recovery",
+    title: "Low Hydration Levels",
+    description: "Daily water intake stayed below 1.5 liters this week",
+    tags: ["Hydration"],
+    statImpact: {
+      fuel: 5,
+    },
+    timestamp: "3d ago",
+    source: "Device",
+  },
+  {
+    id: "4",
+    category: "Sleep",
+    title: "Better Sleep After Walk",
+    description: "You slept for 40 min longer after your evening walk",
+    tags: ["Sleep", "Activity"],
+    statImpact: {
+      recovery: 8,
+    },
+    timestamp: "4d ago",
     source: "AI",
+  },
+  {
+    id: "5",
+    category: "Hormones",
+    title: "Cycle Phase Impact",
+    description: "Mood swings were more frequent around your cycle phase",
+    tags: ["Cycle", "Mood"],
+    statImpact: {
+      clarity: -8,
+      recovery: -5,
+    },
+    timestamp: "2d ago",
+    source: "AI",
+  },
+  {
+    id: "6",
+    category: "Hormones",
+    title: "Luteal Phase Energy Dip",
+    description:
+      "You experienced lower energy and recovery during luteal phase",
+    tags: ["Cycle", "Energy"],
+    statImpact: {
+      stamina: -12,
+      recovery: -8,
+    },
+    timestamp: "3d ago",
+    source: "AI",
+  },
+  {
+    id: "7",
+    category: "Sleep",
+    title: "Screen Time Impact",
+    description:
+      "Increased screen time after 9PM correlated with reduced deep sleep",
+    tags: ["Sleep", "Screen Time"],
+    statImpact: {
+      recovery: -10,
+      clarity: -8,
+    },
+    timestamp: "1d ago",
+    source: "Device",
+  },
+  {
+    id: "8",
+    category: "Activity",
+    title: "Cold Shower Benefits",
+    description:
+      "Heart rate variability improved after cold exposure in the morning",
+    tags: ["Recovery", "HRV"],
+    statImpact: {
+      clarity: 5,
+      stamina: 3,
+    },
+    timestamp: "4h ago",
+    source: "Device",
+  },
+  {
+    id: "9",
+    category: "Mental",
+    title: "Meditation Streak Impact",
+    description: "Meditation streak of 4 days = increased Clarity by 12%",
+    tags: ["Meditation", "Focus"],
+    statImpact: {
+      clarity: 12,
+      recovery: 8,
+    },
+    timestamp: "1d ago",
+    source: "AI",
+  },
+  {
+    id: "10",
+    category: "Mental",
+    title: "Missed Journaling Effect",
+    description: "Skipping journaling = 23% increase in mood fluctuations",
+    tags: ["Journaling", "Mood"],
+    statImpact: {
+      clarity: -6,
+    },
+    timestamp: "2d ago",
+    source: "AI",
+  },
+  {
+    id: "11",
+    category: "Sleep",
+    title: "Phone Usage Impact",
+    description: "Phone usage before bed → delayed REM cycle by 45 mins",
+    tags: ["Sleep", "Screen Time"],
+    statImpact: {
+      recovery: -15,
+      clarity: -10,
+    },
+    timestamp: "12h ago",
+    source: "Device",
+  },
+  {
+    id: "12",
+    category: "Hormones",
+    title: "Cortisol Alert",
+    description: "Cortisol levels were elevated on days with <5 hours sleep",
+    tags: ["Sleep", "Stress"],
+    statImpact: {
+      recovery: -12,
+      clarity: -8,
+    },
+    timestamp: "5h ago",
+    source: "Device",
+  },
+  {
+    id: "13",
+    category: "Mental",
+    title: "Anxiety Pattern Detected",
+    description:
+      "Higher anxiety levels reported during morning meetings (9-11 AM)",
+    tags: ["Anxiety", "Work"],
+    statImpact: {
+      clarity: -15,
+      recovery: -8,
+    },
+    timestamp: "6h ago",
+    source: "AI",
+  },
+  {
+    id: "14",
+    category: "Mental",
+    title: "Social Interaction Impact",
+    description: "30+ mins of social activity reduced anxiety levels by 45%",
+    tags: ["Anxiety", "Social"],
+    statImpact: {
+      clarity: 12,
+      recovery: 8,
+    },
+    timestamp: "1d ago",
+    source: "AI",
+  },
+  {
+    id: "15",
+    category: "Mental",
+    title: "Stress Response Alert",
+    description: "Breathing rate increased during back-to-back meetings",
+    tags: ["Stress", "Work"],
+    statImpact: {
+      clarity: -10,
+      stamina: -8,
+    },
+    timestamp: "3h ago",
+    source: "Device",
+  },
+  {
+    id: "16",
+    category: "Mental",
+    title: "Emotional Regulation Win",
+    description: "Deep breathing exercises helped reduce stress peaks by 60%",
+    tags: ["Stress", "Breathing"],
+    statImpact: {
+      clarity: 15,
+      recovery: 10,
+    },
+    timestamp: "2h ago",
+    source: "Device",
+  },
+  {
+    id: "17",
+    category: "Mental",
+    title: "Focus Session Analysis",
+    description:
+      "Anxiety decreased after 20-min focused work blocks with breaks",
+    tags: ["Focus", "Anxiety"],
+    statImpact: {
+      clarity: 8,
+      stamina: 5,
+    },
+    timestamp: "4h ago",
+    source: "AI",
+  },
+  {
+    id: "18",
+    category: "Mental",
+    title: "Evening Routine Impact",
+    description: "Consistent evening routine reduced nighttime anxiety by 35%",
+    tags: ["Anxiety", "Sleep"],
+    statImpact: {
+      recovery: 12,
+      clarity: 8,
+    },
+    timestamp: "8h ago",
+    source: "AI",
+  },
+  {
+    id: "19",
+    category: "Mental",
+    title: "Work-Break Balance",
+    description:
+      "Missing lunch breaks correlated with 40% higher stress levels",
+    tags: ["Stress", "Work"],
+    statImpact: {
+      clarity: -12,
+      stamina: -10,
+    },
+    timestamp: "5h ago",
+    source: "AI",
+  },
+  {
+    id: "20",
+    category: "Mental",
+    title: "Nature Walk Effect",
+    description: "15-min outdoor walks reduced anxiety symptoms by 25%",
+    tags: ["Anxiety", "Activity"],
+    statImpact: {
+      clarity: 10,
+      recovery: 8,
+    },
+    timestamp: "7h ago",
+    source: "Device",
   },
 ];
 
@@ -159,67 +408,64 @@ export const InsightsScreen = () => {
   );
 
   const renderInsightCard = (insight: Insight) => {
+    const getStatColor = (value: number) => {
+      return value > 0 ? "#22C55E" : "#EF4444";
+    };
+
+    const getStatArrow = (value: number) => {
+      return value > 0 ? "▲" : "▼";
+    };
+
     return (
-      <StyledView
+      <StyledPressable
         key={insight.id}
-        className="bg-white border-2 border-black rounded-3xl p-4 mb-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
+        className="bg-white border-2 border-black rounded-3xl p-4 mb-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
       >
-        <StyledView className="flex-row items-start justify-between">
-          <StyledView className="flex-1">
-            <StyledText className="font-space text-lg">
-              {insight.title}
-            </StyledText>
-            <StyledText className="font-space text-base text-gray-600 mt-1">
-              {insight.description}
-            </StyledText>
-          </StyledView>
-          <StyledView className="bg-black rounded-full p-2">
-            <StyledText>
-              {insight.source === "AI"
-                ? "🤖"
-                : insight.source === "Device"
-                ? "⌚️"
-                : "👤"}
-            </StyledText>
-          </StyledView>
+        {/* Icon and Title */}
+        <StyledView>
+          <StyledText className="font-space text-xl mb-1">
+            {CATEGORY_ICONS[insight.category as keyof typeof CATEGORY_ICONS]}{" "}
+            {insight.title}
+          </StyledText>
+          <StyledText className="font-space text-base text-gray-900 mb-3">
+            {insight.description}
+          </StyledText>
         </StyledView>
 
-        {/* Tags */}
-        <StyledView className="flex-row flex-wrap mt-3">
-          {insight.tags.map((tag) => (
-            <StyledView
-              key={tag}
-              className="bg-black/10 rounded-full px-3 py-1 mr-2 mb-2"
-            >
-              <StyledText className="font-space text-sm">#{tag}</StyledText>
-            </StyledView>
-          ))}
-        </StyledView>
+        {/* Category and Time */}
+        <StyledView className="flex-row items-center justify-between">
+          <StyledView className="flex-row items-center">
+            <StyledText className="font-space text-sm text-gray-500">
+              {insight.category}
+            </StyledText>
+            <StyledText className="font-space text-sm text-gray-500">
+              {" · "}
+              {insight.timestamp}
+            </StyledText>
+          </StyledView>
 
-        {/* Stat Impact */}
-        {Object.entries(insight.statImpact).length > 0 && (
-          <StyledView className="flex-row flex-wrap mt-2">
+          {/* Impact Metrics */}
+          <StyledView className="flex-row items-center space-x-2">
             {Object.entries(insight.statImpact).map(([stat, value]) => (
-              <StyledView
-                key={stat}
-                className="flex-row items-center bg-black/5 rounded-full px-3 py-1 mr-2"
-              >
-                <StyledText>
-                  {STAT_ICONS[stat as keyof typeof STAT_ICONS]}
+              <StyledView key={stat} className="flex-row items-center">
+                <StyledText
+                  style={{ color: getStatColor(value), fontSize: 12 }}
+                >
+                  {getStatArrow(value)}
                 </StyledText>
                 <StyledText
-                  className="font-space text-sm ml-1"
-                  style={{ color: value > 0 ? "#22C55E" : "#EF4444" }}
+                  className="font-space text-base ml-1"
+                  style={{ color: getStatColor(value) }}
                 >
-                  {stat.charAt(0).toUpperCase() + stat.slice(1)}{" "}
                   {value > 0 ? "+" : ""}
-                  {value}
+                  {Math.abs(value)}{" "}
+                  {stat.charAt(0).toUpperCase() + stat.slice(1)}
                 </StyledText>
               </StyledView>
             ))}
           </StyledView>
-        )}
-      </StyledView>
+        </StyledView>
+      </StyledPressable>
     );
   };
 
@@ -253,7 +499,7 @@ export const InsightsScreen = () => {
               <StyledText className="text-lg mr-2">
                 {CATEGORIES.find((c) => c.id === selectedCategory)?.emoji}
               </StyledText>
-              <StyledText className="font-space">
+              <StyledText className="font-space text-base">
                 {CATEGORIES.find((c) => c.id === selectedCategory)?.label}
               </StyledText>
             </StyledView>
@@ -266,7 +512,7 @@ export const InsightsScreen = () => {
           className="flex-1 bg-white border-2 border-black rounded-xl p-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
         >
           <StyledView className="flex-row items-center justify-between">
-            <StyledText className="font-space">
+            <StyledText className="font-space text-base">
               {TIMELINES.find((t) => t.id === selectedTimeline)?.label}
             </StyledText>
             <Feather name="chevron-down" size={20} color="black" />
