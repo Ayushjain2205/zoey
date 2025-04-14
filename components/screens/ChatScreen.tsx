@@ -12,6 +12,7 @@ import {
   Modal,
   Animated,
   Easing,
+  ActionSheetIOS,
 } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -37,6 +38,7 @@ import {
   handleManagerMessage,
   DaySchedule,
 } from "../manager/ManagerTemplates";
+import * as ImagePicker from "expo-image-picker";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -155,6 +157,7 @@ interface Message {
   workoutTemplate?: WorkoutTemplate;
   productCollection?: ProductCollection;
   daySchedule?: DaySchedule;
+  image?: string;
 }
 
 // Add type for Feather icon names
@@ -476,7 +479,121 @@ export const ChatScreen = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleImagePicker = async () => {
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Cancel", "Take Photo", "Choose from Library"],
+          cancelButtonIndex: 0,
+        },
+        async (buttonIndex) => {
+          if (buttonIndex === 1) {
+            // Take Photo
+            const { status } =
+              await ImagePicker.requestCameraPermissionsAsync();
+            if (status === "granted") {
+              const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 0.8,
+                allowsEditing: true,
+                aspect: [4, 3],
+              });
+
+              if (!result.canceled) {
+                const newMessage: Message = {
+                  id: Date.now().toString(),
+                  text: "",
+                  isUser: true,
+                  timestamp: new Date(),
+                  image: result.assets[0].uri,
+                };
+                setMessages((prev) => [...prev, newMessage]);
+                scrollToBottom();
+              }
+            }
+          } else if (buttonIndex === 2) {
+            // Choose from Library
+            const { status } =
+              await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status === "granted") {
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 0.8,
+                allowsEditing: true,
+                aspect: [4, 3],
+              });
+
+              if (!result.canceled) {
+                const newMessage: Message = {
+                  id: Date.now().toString(),
+                  text: "",
+                  isUser: true,
+                  timestamp: new Date(),
+                  image: result.assets[0].uri,
+                };
+                setMessages((prev) => [...prev, newMessage]);
+                scrollToBottom();
+              }
+            }
+          }
+        }
+      );
+    } else {
+      // For Android, directly open image picker
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status === "granted") {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+          allowsEditing: true,
+          aspect: [4, 3],
+        });
+
+        if (!result.canceled) {
+          const newMessage: Message = {
+            id: Date.now().toString(),
+            text: "",
+            isUser: true,
+            timestamp: new Date(),
+            image: result.assets[0].uri,
+          };
+          setMessages((prev) => [...prev, newMessage]);
+          scrollToBottom();
+        }
+      }
+    }
+  };
+
   const renderMessage = (message: Message) => {
+    if (message.image) {
+      return (
+        <StyledView
+          key={message.id}
+          className={`mb-4 flex-row ${
+            message.isUser ? "justify-end" : "justify-start"
+          }`}
+        >
+          <StyledView
+            className={`p-1 border-2 border-black ${
+              message.isUser
+                ? `rounded-tl-xl rounded-tr-xl rounded-bl-xl`
+                : "bg-white rounded-tl-xl rounded-tr-xl rounded-br-xl"
+            } shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
+            style={{
+              backgroundColor: message.isUser ? currentTheme.main : "white",
+            }}
+          >
+            <StyledImage
+              source={{ uri: message.image }}
+              className="w-60 h-60 rounded-lg"
+              resizeMode="cover"
+            />
+          </StyledView>
+        </StyledView>
+      );
+    }
+
     if (
       !message.isUser &&
       message.text === "WORKOUT_TEMPLATE" &&
@@ -660,13 +777,23 @@ export const ChatScreen = () => {
             </StyledView>
           </StyledPressable>
         </StyledView>
-        <StyledPressable
-          onPress={handleCallPress}
-          className="border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
-          style={{ backgroundColor: currentTheme.main }}
-        >
-          <Feather name="phone" size={20} color="black" />
-        </StyledPressable>
+
+        <StyledView className="flex-row space-x-2">
+          <StyledPressable
+            onPress={handleImagePicker}
+            className="border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ backgroundColor: currentTheme.main }}
+          >
+            <Feather name="camera" size={20} color="black" />
+          </StyledPressable>
+          <StyledPressable
+            onPress={handleCallPress}
+            className="border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ backgroundColor: currentTheme.main }}
+          >
+            <Feather name="phone" size={20} color="black" />
+          </StyledPressable>
+        </StyledView>
       </StyledView>
 
       {renderModePicker()}
