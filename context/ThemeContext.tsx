@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 
-export type ChatMode = "BFF" | "COACH" | "MANAGER" | "GF" | "SHOPPER";
+export type ChatMode =
+  | "DOCTOR"
+  | "NUTRITIONIST"
+  | "THERAPIST"
+  | "TRAINER"
+  | "SLEEP"
+  | "MEDITATION";
 
 export interface ThemeColors {
   main: string;
@@ -10,35 +16,41 @@ export interface ThemeColors {
 }
 
 export const modeColors: Record<string, ThemeColors> = {
-  BFF: {
-    main: "#E0B3FF",
-    light: "#F0E5FF",
-    lighter: "#F8F5FF",
-    dark: "#B366FF",
-  },
-  MANAGER: {
-    main: "#BAFFC9",
-    light: "#E5FFE9",
-    lighter: "#F5FFF7",
-    dark: "#7AFF8F",
-  },
-  COACH: {
+  DOCTOR: {
     main: "#BAE1FF",
     light: "#E5F4FF",
     lighter: "#F5FAFF",
     dark: "#7AC2FF",
   },
-  SHOPPER: {
+  NUTRITIONIST: {
+    main: "#BAFFC9",
+    light: "#E5FFE9",
+    lighter: "#F5FFF7",
+    dark: "#7AFF8F",
+  },
+  THERAPIST: {
+    main: "#E0B3FF",
+    light: "#F0E5FF",
+    lighter: "#F8F5FF",
+    dark: "#B366FF",
+  },
+  TRAINER: {
+    main: "#FFB3BA",
+    light: "#FFE5E8",
+    lighter: "#FFF5F7",
+    dark: "#FF7A85",
+  },
+  SLEEP: {
     main: "#7EE8E8",
     light: "#E5FDFD",
     lighter: "#F5FEFE",
     dark: "#4AD8D8",
   },
-  GF: {
-    main: "#FFB3BA",
-    light: "#FFE5E8",
-    lighter: "#FFF5F7",
-    dark: "#FF7A85",
+  MEDITATION: {
+    main: "#FFE4B3",
+    light: "#FFF4E5",
+    lighter: "#FFF9F5",
+    dark: "#FFD27A",
   },
 };
 
@@ -50,29 +62,34 @@ export interface ChatModeConfig {
 
 export const CHAT_MODES: ChatModeConfig[] = [
   {
-    name: "BFF",
+    name: "DOCTOR",
+    image: require("../assets/images/zoey_doctor.png"),
+    color: modeColors.DOCTOR.main,
+  },
+  {
+    name: "NUTRITIONIST",
+    image: require("../assets/images/zoey_nutritionist.png"),
+    color: modeColors.NUTRITIONIST.main,
+  },
+  {
+    name: "THERAPIST",
+    image: require("../assets/images/zoey_therapist.png"),
+    color: modeColors.THERAPIST.main,
+  },
+  {
+    name: "TRAINER",
+    image: require("../assets/images/zoey_trainer.png"),
+    color: modeColors.TRAINER.main,
+  },
+  {
+    name: "SLEEP",
+    image: require("../assets/images/zoey_sleep.png"),
+    color: modeColors.SLEEP.main,
+  },
+  {
+    name: "MEDITATION",
     image: require("../assets/images/zoey_meditation.png"),
-    color: modeColors.BFF.main,
-  },
-  {
-    name: "COACH",
-    image: require("../assets/images/zoey_coach.png"),
-    color: modeColors.COACH.main,
-  },
-  {
-    name: "MANAGER",
-    image: require("../assets/images/zoey_manager.png"),
-    color: modeColors.MANAGER.main,
-  },
-  {
-    name: "GF",
-    image: require("../assets/images/zoey_gf.png"),
-    color: modeColors.GF.main,
-  },
-  {
-    name: "SHOPPER",
-    image: require("../assets/images/zoey_shopper.png"),
-    color: modeColors.SHOPPER.main,
+    color: modeColors.MEDITATION.main,
   },
 ];
 

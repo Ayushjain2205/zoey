@@ -46,7 +46,13 @@ const StyledScrollView = styled(ScrollView);
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledImage = styled(Image);
 
-type ChatMode = "BFF" | "COACH" | "MANAGER" | "GF" | "SHOPPER";
+type ChatMode =
+  | "DOCTOR"
+  | "NUTRITIONIST"
+  | "THERAPIST"
+  | "TRAINER"
+  | "SLEEP"
+  | "MEDITATION";
 
 interface ThemeColors {
   main: string;
@@ -55,31 +61,51 @@ interface ThemeColors {
 }
 
 const modeColors: Record<string, ThemeColors> = {
-  BFF: {
-    main: "#E0B3FF",
-    light: "#F0E5FF",
-    lighter: "#F8F5FF",
-  },
-  MANAGER: {
-    main: "#BAFFC9",
-    light: "#E5FFE9",
-    lighter: "#F5FFF7",
-  },
-  COACH: {
+  DOCTOR: {
     main: "#BAE1FF",
     light: "#E5F4FF",
     lighter: "#F5FAFF",
   },
-  SHOPPER: {
-    main: "#FFFFBA",
-    light: "#FFFFE5",
-    lighter: "#FFFFF5",
+  NUTRITIONIST: {
+    main: "#BAFFC9",
+    light: "#E5FFE9",
+    lighter: "#F5FFF7",
   },
-  GF: {
+  THERAPIST: {
+    main: "#E0B3FF",
+    light: "#F0E5FF",
+    lighter: "#F8F5FF",
+  },
+  TRAINER: {
     main: "#FFB3BA",
     light: "#FFE5E8",
     lighter: "#FFF5F7",
   },
+  SLEEP: {
+    main: "#7EE8E8",
+    light: "#E5FDFD",
+    lighter: "#F5FEFE",
+  },
+  MEDITATION: {
+    main: "#FFE4B3",
+    light: "#FFF4E5",
+    lighter: "#FFF9F5",
+  },
+};
+
+const modeIntroMessages: Record<ChatMode, string> = {
+  DOCTOR:
+    "Hello! I'm your virtual doctor. How can I help you with your health concerns today? 👨‍⚕️",
+  NUTRITIONIST:
+    "Hi! I'm here to help you make healthy food choices and create a balanced diet plan. What's on your mind? 🥗",
+  THERAPIST:
+    "Welcome to a safe space. I'm here to listen and support you through whatever you'd like to discuss. How are you feeling today? 💭",
+  TRAINER:
+    "Ready to crush your fitness goals! What type of workout are you looking to do today? 💪",
+  SLEEP:
+    "Looking to improve your sleep quality? I'm here to help you develop better sleep habits. How have you been sleeping lately? 😴",
+  MEDITATION:
+    "Welcome to your mindfulness journey. Let's find some peace and clarity together. How can I guide you today? 🧘‍♀️",
 };
 
 interface ChatModeConfig {
@@ -89,30 +115,35 @@ interface ChatModeConfig {
 }
 
 const modeConfig: Record<string, ChatModeConfig> = {
-  BFF: {
-    name: "BFF",
-    image: require("../../assets/images/zoey.png"),
-    color: modeColors.BFF.main,
+  DOCTOR: {
+    name: "DOCTOR",
+    image: require("../../assets/images/zoey_doctor.png"),
+    color: modeColors.DOCTOR.main,
   },
-  MANAGER: {
-    name: "MANAGER",
-    image: require("../../assets/images/zoey_manager.png"),
-    color: modeColors.MANAGER.main,
+  NUTRITIONIST: {
+    name: "NUTRITIONIST",
+    image: require("../../assets/images/zoey_nutritionist.png"),
+    color: modeColors.NUTRITIONIST.main,
   },
-  COACH: {
-    name: "COACH",
-    image: require("../../assets/images/zoey_coach.png"),
-    color: modeColors.COACH.main,
+  THERAPIST: {
+    name: "THERAPIST",
+    image: require("../../assets/images/zoey_therapist.png"),
+    color: modeColors.THERAPIST.main,
   },
-  SHOPPER: {
-    name: "SHOPPER",
-    image: require("../../assets/images/zoey_shopper.png"),
-    color: modeColors.SHOPPER.main,
+  TRAINER: {
+    name: "TRAINER",
+    image: require("../../assets/images/zoey_trainer.png"),
+    color: modeColors.TRAINER.main,
   },
-  GF: {
-    name: "GF",
-    image: require("../../assets/images/zoey_gf.png"),
-    color: modeColors.GF.main,
+  SLEEP: {
+    name: "SLEEP",
+    image: require("../../assets/images/zoey_sleep.png"),
+    color: modeColors.SLEEP.main,
+  },
+  MEDITATION: {
+    name: "MEDITATION",
+    image: require("../../assets/images/zoey_meditation.png"),
+    color: modeColors.MEDITATION.main,
   },
 };
 
@@ -125,16 +156,6 @@ interface Message {
   productCollection?: ProductCollection;
   daySchedule?: DaySchedule;
 }
-
-const modeIntroMessages: Record<ChatMode, string> = {
-  BFF: "Hey bestie! 💕 Ready to chat about anything and everything? I'm all ears!",
-  COACH: "Let's crush those goals together! 💪 What are we working on today?",
-  MANAGER:
-    "Time to get productive! 📊 What can I help you organize or accomplish?",
-  SHOPPER:
-    "Shopping time! 🛍️ Looking for something specific or just want to browse?",
-  GF: "Hey sweetie! 💖 How's your day going? Tell me all about it!",
-};
 
 // Add type for Feather icon names
 type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
@@ -334,8 +355,8 @@ export const ChatScreen = () => {
     // Show typing indicator
     setIsTyping(true);
 
-    // Special handling for coach mode
-    if (selectedMode.name === "COACH") {
+    // Special handling for trainer mode
+    if (selectedMode.name === "TRAINER") {
       const coachResponse = handleCoachMessage(text);
       if (coachResponse) {
         setTimeout(() => {
@@ -360,8 +381,8 @@ export const ChatScreen = () => {
       }
     }
 
-    // Special handling for shopper mode
-    if (selectedMode.name === "SHOPPER") {
+    // Special handling for nutritionist mode
+    if (selectedMode.name === "NUTRITIONIST") {
       const shopperResponse = handleShopperMessage(text);
       if (shopperResponse) {
         setTimeout(() => {
@@ -386,8 +407,8 @@ export const ChatScreen = () => {
       }
     }
 
-    // Special handling for manager mode
-    if (selectedMode.name === "MANAGER") {
+    // Special handling for sleep mode
+    if (selectedMode.name === "SLEEP") {
       const managerResponse = handleManagerMessage(text);
       if (managerResponse) {
         setTimeout(() => {
