@@ -67,8 +67,8 @@ export const UserScreen = () => {
     },
     {
       id: 4,
-      category: "Reading",
-      icon: "book-open",
+      category: "Eat Clean",
+      icon: "heart",
       streak: 7,
       color: "#FCD34D", // Light yellow
     },
