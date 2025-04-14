@@ -1,5 +1,5 @@
-import { WalletScreen } from "../components/screens/WalletScreen";
+import { ProfileScreen } from "../components/screens/WalletScreen";
 
 export default function Profile() {
-  return <WalletScreen />;
+  return <ProfileScreen />;
 }
