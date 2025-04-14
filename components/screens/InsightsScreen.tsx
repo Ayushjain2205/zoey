@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import { Svg, Path, Circle, G, Text as SvgText } from "react-native-svg";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -358,6 +359,203 @@ export const InsightsScreen = () => {
     useState<TimelineFilter>("Today");
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const [isTimelineModalVisible, setIsTimelineModalVisible] = useState(false);
+  const [isMapView, setIsMapView] = useState(false);
+
+  const getAggregatedStats = () => {
+    const stats = {
+      Clarity: 0,
+      Recovery: 0,
+      Stamina: 0,
+      Focus: 0,
+      Energy: 0,
+    };
+
+    const relevantInsights = MOCK_INSIGHTS.filter(
+      (insight) =>
+        selectedCategory === "Overview" || insight.category === selectedCategory
+    );
+
+    relevantInsights.forEach((insight) => {
+      Object.entries(insight.statImpact).forEach(([stat, value]) => {
+        const normalizedStat = stat.charAt(0).toUpperCase() + stat.slice(1);
+        if (stats.hasOwnProperty(normalizedStat)) {
+          stats[normalizedStat as keyof typeof stats] += value;
+        }
+      });
+    });
+
+    // Normalize values between 0 and 100
+    Object.keys(stats).forEach((key) => {
+      const value = stats[key as keyof typeof stats];
+      stats[key as keyof typeof stats] = Math.min(
+        Math.max((value + 100) / 2, 0),
+        100
+      );
+    });
+
+    return stats;
+  };
+
+  const renderRadarChart = () => {
+    const stats = getAggregatedStats();
+    const values = Object.values(stats);
+    const labels = Object.keys(stats);
+    const numPoints = values.length;
+    const angleStep = (Math.PI * 2) / numPoints;
+    const center = { x: 150, y: 160 };
+    const radius = 100;
+    const maxValue = 100;
+
+    // Calculate points for the radar
+    const points = values.map((value, i) => {
+      const angle = i * angleStep - Math.PI / 2;
+      const distance = (value / maxValue) * radius;
+      return {
+        x: center.x + distance * Math.cos(angle),
+        y: center.y + distance * Math.sin(angle),
+      };
+    });
+
+    // Create path for the radar shape
+    const pathData =
+      points
+        .map((point, i) => `${i === 0 ? "M" : "L"} ${point.x},${point.y}`)
+        .join(" ") + " Z";
+
+    // Create background grid lines
+    const gridLines = [0.25, 0.5, 0.75, 1].map((scale) => {
+      const gridPoints = Array.from({ length: numPoints }).map((_, i) => {
+        const angle = i * angleStep - Math.PI / 2;
+        const distance = radius * scale;
+        return {
+          x: center.x + distance * Math.cos(angle),
+          y: center.y + distance * Math.sin(angle),
+        };
+      });
+      return (
+        gridPoints
+          .map((point, i) => `${i === 0 ? "M" : "L"} ${point.x},${point.y}`)
+          .join(" ") + " Z"
+      );
+    });
+
+    const getEmoji = (label: string) => {
+      switch (label) {
+        case "Clarity":
+          return "🎯";
+        case "Recovery":
+          return "🔄";
+        case "Stamina":
+          return "⚡️";
+        case "Focus":
+          return "👀";
+        case "Energy":
+          return "✨";
+        default:
+          return "⭐️";
+      }
+    };
+
+    return (
+      <StyledView className="items-center mt-4 bg-white border-2 border-black rounded-3xl p-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+        <StyledText className="font-space text-xl mb-4">
+          Insights Map
+        </StyledText>
+        <Svg width={300} height={350}>
+          {/* Background grid */}
+          {gridLines.map((line, i) => (
+            <Path
+              key={`grid-${i}`}
+              d={line}
+              stroke="#00000010"
+              strokeWidth="1"
+              fill="none"
+            />
+          ))}
+
+          {/* Axis lines */}
+          {points.map((point, i) => (
+            <Path
+              key={`axis-${i}`}
+              d={`M ${center.x},${center.y} L ${point.x},${point.y}`}
+              stroke="#00000010"
+              strokeWidth="1"
+            />
+          ))}
+
+          {/* Data shape with gradient */}
+          <Path
+            d={pathData}
+            fill="rgba(0, 0, 0, 0.05)"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Data points with cute circles */}
+          {points.map((point, i) => (
+            <G key={`point-${i}`}>
+              <Circle
+                cx={point.x}
+                cy={point.y}
+                r="6"
+                fill="white"
+                stroke="black"
+                strokeWidth="2"
+              />
+              <Circle cx={point.x} cy={point.y} r="3" fill="black" />
+            </G>
+          ))}
+
+          {/* Labels with emojis */}
+          {labels.map((label, i) => {
+            const angle = i * angleStep - Math.PI / 2;
+            const labelDistance = radius + 35;
+            const x = center.x + labelDistance * Math.cos(angle);
+            const y = center.y + labelDistance * Math.sin(angle);
+            const value = values[i].toFixed(0);
+            return (
+              <G key={`label-${i}`}>
+                <SvgText
+                  x={x}
+                  y={y - 12}
+                  fill="black"
+                  fontSize="16"
+                  textAnchor="middle"
+                  alignmentBaseline="middle"
+                >
+                  {getEmoji(label)}
+                </SvgText>
+                <SvgText
+                  x={x}
+                  y={y + 8}
+                  fill="black"
+                  fontSize="12"
+                  fontFamily="SpaceGrotesk"
+                  fontWeight="500"
+                  textAnchor="middle"
+                  alignmentBaseline="middle"
+                >
+                  {label}
+                </SvgText>
+              </G>
+            );
+          })}
+
+          {/* Center decoration */}
+          <Circle
+            cx={center.x}
+            cy={center.y}
+            r="4"
+            fill="white"
+            stroke="black"
+            strokeWidth="2"
+          />
+        </Svg>
+      </StyledView>
+    );
+  };
 
   const renderSelectModal = (
     isVisible: boolean,
@@ -486,6 +684,16 @@ export const InsightsScreen = () => {
           </StyledPressable>
           <StyledText className="font-space text-2xl ml-4">Insights</StyledText>
         </StyledView>
+        <StyledPressable
+          onPress={() => setIsMapView(!isMapView)}
+          className="bg-white border-2 border-black rounded-xl w-10 h-10 items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px]"
+        >
+          <Feather
+            name={isMapView ? "list" : "activity"}
+            size={20}
+            color="black"
+          />
+        </StyledPressable>
       </StyledView>
 
       {/* Filters */}
@@ -522,7 +730,7 @@ export const InsightsScreen = () => {
 
       {/* Content */}
       <StyledScrollView className="flex-1 px-4">
-        {selectedCategory === "Overview" && (
+        {selectedCategory === "Overview" && !isMapView && (
           <StyledView className="bg-white border-2 border-black rounded-3xl p-4 mb-4">
             <StyledView className="flex-row items-center mb-3">
               <StyledView className="w-12 h-12 rounded-full overflow-hidden">
@@ -544,11 +752,13 @@ export const InsightsScreen = () => {
           </StyledView>
         )}
 
-        {MOCK_INSIGHTS.filter(
-          (insight) =>
-            selectedCategory === "Overview" ||
-            insight.category === selectedCategory
-        ).map(renderInsightCard)}
+        {isMapView
+          ? renderRadarChart()
+          : MOCK_INSIGHTS.filter(
+              (insight) =>
+                selectedCategory === "Overview" ||
+                insight.category === selectedCategory
+            ).map(renderInsightCard)}
       </StyledScrollView>
 
       {/* Modals */}
