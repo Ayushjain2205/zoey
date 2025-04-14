@@ -25,7 +25,7 @@ export default function RootLayout() {
       // Shorter delay for better UX
       setTimeout(() => {
         setIsReady(true);
-      }, 3000);
+      }, 3500);
     }
   }, [fontsLoaded]);
 

@@ -51,7 +51,7 @@ export interface ChatModeConfig {
 export const CHAT_MODES: ChatModeConfig[] = [
   {
     name: "BFF",
-    image: require("../assets/images/zoey.png"),
+    image: require("../assets/images/zoey_meditation.png"),
     color: modeColors.BFF.main,
   },
   {
