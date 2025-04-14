@@ -10,126 +10,151 @@ const StyledText = styled(Text);
 // Types
 type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 
-export interface WorkoutExercise {
+export interface Exercise {
   name: string;
-  sets: string;
-  instruction: string;
+  sets: number;
+  reps: string;
+  rest: string;
   icon: FeatherIconName;
 }
 
 export interface WorkoutTemplate {
   title: string;
   description: string;
-  exercises: WorkoutExercise[];
+  exercises: Exercise[];
   tips: string[];
 }
 
 // Templates
 export const legWorkout: WorkoutTemplate = {
-  title: "Killer Leg Workout 🦵",
-  description: "Build strong, powerful legs with this comprehensive routine",
+  title: "Leg Day Workout",
+  description: "A comprehensive leg workout targeting all major muscle groups",
   exercises: [
     {
       name: "Squats",
-      sets: "3 sets × 10-15 reps",
-      instruction: "Keep chest up, push hips back",
-      icon: "trending-up",
+      sets: 3,
+      reps: "10-15 reps",
+      rest: "1-2 minutes",
+      icon: "chevrons-down",
     },
     {
       name: "Lunges",
-      sets: "3 sets × 10 reps/leg",
-      instruction: "Front knee over ankle",
-      icon: "activity",
+      sets: 3,
+      reps: "10 reps/leg",
+      rest: "1-2 minutes",
+      icon: "chevrons-right",
     },
     {
       name: "Deadlifts",
-      sets: "3 sets × 10-12 reps",
-      instruction: "Hinge at hips, back straight",
-      icon: "bar-chart-2",
+      sets: 3,
+      reps: "10-12 reps",
+      rest: "1-2 minutes",
+      icon: "arrow-up",
     },
     {
       name: "Leg Press",
-      sets: "3 sets × 10-12 reps",
-      instruction: "Push through heels",
+      sets: 3,
+      reps: "10-12 reps",
+      rest: "1-2 minutes",
       icon: "chevrons-up",
     },
     {
       name: "Calf Raises",
-      sets: "3 sets × 15-20 reps",
-      instruction: "Squeeze at the top",
-      icon: "arrow-up",
+      sets: 3,
+      reps: "15-20 reps",
+      rest: "1-2 minutes",
+      icon: "arrow-up-circle",
     },
     {
       name: "Glute Bridges",
-      sets: "3 sets × 12-15 reps",
-      instruction: "Squeeze glutes at top",
+      sets: 3,
+      reps: "12-15 reps",
+      rest: "1-2 minutes",
       icon: "trending-up",
     },
   ],
-  tips: ["Stay hydrated 💧", "Focus on form over speed", "Listen to your body"],
+  tips: [
+    "Keep proper form throughout",
+    "Stay hydrated",
+    "Rest between sets",
+    "Stretch after workout",
+  ],
 };
 
 // Add more workout templates here as needed
 export const upperBodyWorkout: WorkoutTemplate = {
-  title: "Upper Body Power 💪",
-  description: "Build strength and muscle in your upper body",
+  title: "Upper Body Strength",
+  description: "Build upper body strength and muscle",
   exercises: [
     {
       name: "Push-ups",
-      sets: "3 sets × 12-15 reps",
-      instruction: "Keep core tight, elbows at 45°",
-      icon: "arrow-down",
+      sets: 3,
+      reps: "12-15 reps",
+      rest: "1-2 minutes",
+      icon: "arrow-down-circle",
     },
     {
       name: "Pull-ups",
-      sets: "3 sets × 8-12 reps",
-      instruction: "Full range of motion",
-      icon: "arrow-up",
+      sets: 3,
+      reps: "8-12 reps",
+      rest: "1-2 minutes",
+      icon: "arrow-up-circle",
     },
     {
       name: "Bench Press",
-      sets: "3 sets × 10 reps",
-      instruction: "Control the descent",
-      icon: "trending-up",
+      sets: 3,
+      reps: "10 reps",
+      rest: "1-2 minutes",
+      icon: "chevrons-down",
     },
     {
       name: "Shoulder Press",
-      sets: "3 sets × 10-12 reps",
-      instruction: "Keep core engaged",
+      sets: 3,
+      reps: "10-12 reps",
+      rest: "1-2 minutes",
       icon: "chevrons-up",
     },
   ],
   tips: [
-    "Warm up properly",
-    "Focus on controlled movements",
-    "Stay hydrated 💧",
+    "Maintain proper form",
+    "Control the weight",
+    "Full range of motion",
+    "Breathe steadily",
   ],
 };
 
 export const coreWorkout: WorkoutTemplate = {
-  title: "Core Crusher 🎯",
-  description: "Strengthen your core and improve stability",
+  title: "Core Strength",
+  description: "Build a strong and stable core",
   exercises: [
     {
       name: "Planks",
-      sets: "3 sets × 45 seconds",
-      instruction: "Keep body straight",
+      sets: 3,
+      reps: "45 seconds",
+      rest: "1-2 minutes",
       icon: "minus",
     },
     {
       name: "Crunches",
-      sets: "3 sets × 20 reps",
-      instruction: "Engage core throughout",
+      sets: 3,
+      reps: "20 reps",
+      rest: "1-2 minutes",
       icon: "chevrons-up",
     },
     {
       name: "Russian Twists",
-      sets: "3 sets × 20 reps",
-      instruction: "Control the rotation",
+      sets: 3,
+      reps: "20 reps",
+      rest: "1-2 minutes",
       icon: "rotate-cw",
     },
   ],
-  tips: ["Quality over quantity", "Breathe steadily", "Keep form strict"],
+  tips: [
+    "Engage core throughout",
+    "Control movements",
+    "Quality over quantity",
+    "Keep breathing steady",
+  ],
 };
 
 interface TemplateProps {
@@ -170,11 +195,11 @@ export const WorkoutCard: React.FC<
                 {exercise.name}
               </StyledText>
               <StyledText className="font-space text-xs text-gray-600">
-                {exercise.sets}
+                {exercise.sets} sets, {exercise.reps}
               </StyledText>
             </StyledView>
             <StyledText className="font-space text-xs text-gray-500">
-              {exercise.instruction}
+              {exercise.rest}
             </StyledText>
           </StyledView>
         </StyledView>

@@ -22,6 +22,13 @@ export interface Meeting {
 
 export interface DaySchedule {
   date: string;
+  sleepTime: string;
+  wakeTime: string;
+  activities: {
+    time: string;
+    activity: string;
+    duration: number;
+  }[];
   meetings: Meeting[];
 }
 
@@ -32,6 +39,20 @@ export const todaySchedule: DaySchedule = {
     month: "long",
     day: "numeric",
   }),
+  sleepTime: "10:00 PM",
+  wakeTime: "06:00 AM",
+  activities: [
+    {
+      time: "06:00 AM",
+      activity: "Morning Exercise",
+      duration: 30,
+    },
+    {
+      time: "07:00 AM",
+      activity: "Breakfast",
+      duration: 60,
+    },
+  ],
   meetings: [
     {
       id: "1",

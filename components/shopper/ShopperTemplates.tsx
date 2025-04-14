@@ -19,6 +19,12 @@ export interface Product {
   reviews: number;
   image: any; // Local image require() or remote URL
   isPrime: boolean;
+  nutrition: {
+    calories: number;
+    protein: string;
+    carbs: string;
+    fats: string;
+  };
 }
 
 export interface ProductCollection {
@@ -40,6 +46,12 @@ export const techDeals: ProductCollection = {
       reviews: 31250,
       image: require("../../assets/images/products/airpods.jpg"),
       isPrime: true,
+      nutrition: {
+        calories: 0,
+        protein: "",
+        carbs: "",
+        fats: "",
+      },
     },
     {
       id: "2",
@@ -51,6 +63,12 @@ export const techDeals: ProductCollection = {
       reviews: 8420,
       image: require("../../assets/images/products/watch.jpg"),
       isPrime: true,
+      nutrition: {
+        calories: 0,
+        protein: "",
+        carbs: "",
+        fats: "",
+      },
     },
     {
       id: "3",
@@ -62,6 +80,12 @@ export const techDeals: ProductCollection = {
       reviews: 2150,
       image: require("../../assets/images/products/macbook.jpg"),
       isPrime: true,
+      nutrition: {
+        calories: 0,
+        protein: "",
+        carbs: "",
+        fats: "",
+      },
     },
     {
       id: "4",
@@ -72,6 +96,12 @@ export const techDeals: ProductCollection = {
       reviews: 12340,
       image: require("../../assets/images/products/iphone.jpeg"),
       isPrime: true,
+      nutrition: {
+        calories: 0,
+        protein: "",
+        carbs: "",
+        fats: "",
+      },
     },
   ],
 };

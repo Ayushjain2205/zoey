@@ -62,6 +62,86 @@ interface ThemeColors {
   lighter: string;
 }
 
+interface Exercise {
+  name: string;
+  sets: number;
+  reps: string;
+  rest: string;
+  icon: string;
+}
+
+interface WorkoutTemplate {
+  title: string;
+  description: string;
+  exercises: Exercise[];
+  tips: string[];
+}
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  image: any;
+  price: number;
+  rating: number;
+  reviews: number;
+  isPrime: boolean;
+  nutrition: {
+    calories: number;
+    protein: string;
+    carbs: string;
+    fats: string;
+  };
+}
+
+interface ProductCollection {
+  title: string;
+  products: Product[];
+}
+
+interface Activity {
+  time: string;
+  activity: string;
+  duration: number;
+}
+
+interface Meeting {
+  time: string;
+  title: string;
+  duration: number;
+}
+
+interface DaySchedule {
+  date: string;
+  sleepTime: string;
+  wakeTime: string;
+  activities: Activity[];
+  meetings: Meeting[];
+}
+
+interface Message {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+  workoutTemplate?: import("../coach/CoachTemplates").WorkoutTemplate;
+  productCollection?: import("../coach/CoachTemplates").ProductCollection;
+  daySchedule?: import("../manager/ManagerTemplates").DaySchedule;
+  image?: string;
+}
+
+interface SimulatedResponse {
+  text: string;
+  delay?: number;
+  workoutTemplate?: import("../coach/CoachTemplates").WorkoutTemplate;
+  productCollection?: import("../coach/CoachTemplates").ProductCollection;
+  daySchedule?: import("../manager/ManagerTemplates").DaySchedule;
+}
+
+interface SimulatedFlow {
+  responses: SimulatedResponse[];
+}
+
 const modeColors: Record<string, ThemeColors> = {
   DOCTOR: {
     main: "#BAE1FF",
@@ -97,17 +177,227 @@ const modeColors: Record<string, ThemeColors> = {
 
 const modeIntroMessages: Record<ChatMode, string> = {
   DOCTOR:
-    "Hello! I'm your virtual doctor. How can I help you with your health concerns today? 👨‍⚕️",
+    "You were supposed to take Cetirizine at 8pm post dinner did you take it? 👨‍⚕️",
   NUTRITIONIST:
-    "Hi! I'm here to help you make healthy food choices and create a balanced diet plan. What's on your mind? 🥗",
+    "Welcome! I'm here to help you make healthy food choices. What would you like to know about your nutrition today? 🥗",
   THERAPIST:
-    "Welcome to a safe space. I'm here to listen and support you through whatever you'd like to discuss. How are you feeling today? 💭",
+    "Hi! This is a safe space to share your thoughts and feelings. How are you feeling today? 💭",
   TRAINER:
-    "Ready to crush your fitness goals! What type of workout are you looking to do today? 💪",
+    "Ready to crush your fitness goals! What type of workout would you like to do today? 💪",
   SLEEP:
-    "Looking to improve your sleep quality? I'm here to help you develop better sleep habits. How have you been sleeping lately? 😴",
+    "Let's work on improving your sleep quality. How can I help you get better rest? 😴",
   MEDITATION:
-    "Welcome to your mindfulness journey. Let's find some peace and clarity together. How can I guide you today? 🧘‍♀️",
+    "Welcome to your mindfulness session. How would you like to center yourself today? 🧘‍♀️",
+};
+
+// Conversation step counter for each mode
+const conversationSteps: Record<ChatMode, number> = {
+  DOCTOR: 0,
+  NUTRITIONIST: 0,
+  THERAPIST: 0,
+  TRAINER: 0,
+  SLEEP: 0,
+  MEDITATION: 0,
+};
+
+const mockFlows: Record<ChatMode, SimulatedFlow> = {
+  DOCTOR: {
+    responses: [
+      {
+        text: "How are your symptoms today?",
+        delay: 1000,
+      },
+      {
+        text: "That's great to hear! The medication seems to be working. Any side effects like drowsiness?",
+        delay: 1500,
+      },
+      {
+        text: "Perfect! Let's continue with the current dosage. Remember to take it at the same time tomorrow. Would you like me to set a reminder for you?",
+        delay: 2000,
+      },
+    ],
+  },
+  NUTRITIONIST: {
+    responses: [
+      {
+        text: "Based on your fitness goals and the fact that you usually workout in the mornings, I'd recommend a protein-rich breakfast. How about:",
+        delay: 1000,
+      },
+      {
+        text: "PRODUCT_COLLECTION",
+        productCollection: {
+          title: "Healthy Breakfast Options",
+          products: [
+            {
+              id: "1",
+              name: "Greek Yogurt Parfait",
+              description: "Greek yogurt, granola, berries, and honey",
+              image: require("../../assets/images/gifts/candle.png"),
+              price: 8.99,
+              rating: 4.8,
+              reviews: 128,
+              isPrime: true,
+              nutrition: {
+                calories: 320,
+                protein: "20g",
+                carbs: "40g",
+                fats: "10g",
+              },
+            },
+            {
+              id: "2",
+              name: "Protein Oatmeal",
+              description: "Oats, protein powder, banana, and almonds",
+              image: require("../../assets/images/gifts/candle.png"),
+              price: 7.99,
+              rating: 4.7,
+              reviews: 95,
+              isPrime: true,
+              nutrition: {
+                calories: 380,
+                protein: "25g",
+                carbs: "45g",
+                fats: "12g",
+              },
+            },
+          ],
+        },
+        delay: 1500,
+      },
+      {
+        text: "These options provide a good balance of protein and complex carbs. Would you like me to suggest some pre-workout snacks as well?",
+        delay: 2000,
+      },
+    ],
+  },
+  TRAINER: {
+    responses: [
+      {
+        text: "I've got the perfect leg workout for you! This will target all major muscle groups in your legs:",
+        delay: 1000,
+      },
+      {
+        text: "WORKOUT_TEMPLATE",
+        workoutTemplate: {
+          title: "Lower Body Power",
+          description:
+            "A comprehensive leg workout targeting all major muscle groups",
+          exercises: [
+            {
+              name: "Squats",
+              sets: 4,
+              reps: "12",
+              rest: "60 sec",
+              icon: "chevrons-down" as const,
+            },
+            {
+              name: "Romanian Deadlifts",
+              sets: 3,
+              reps: "12",
+              rest: "60 sec",
+              icon: "arrow-up" as const,
+            },
+            {
+              name: "Walking Lunges",
+              sets: 3,
+              reps: "20",
+              rest: "45 sec",
+              icon: "chevrons-right" as const,
+            },
+          ],
+          tips: ["Keep proper form", "Stay hydrated", "Rest between sets"],
+        },
+        delay: 1500,
+      },
+      {
+        text: "How does this workout look? We can adjust the intensity if needed.",
+        delay: 2000,
+      },
+    ],
+  },
+  SLEEP: {
+    responses: [
+      {
+        text: "I'll help you create a better sleep routine. First, let's look at your current schedule:",
+        delay: 1000,
+      },
+      {
+        text: "CALENDAR_VIEW",
+        daySchedule: {
+          date: new Date().toISOString(),
+          sleepTime: "23:00",
+          wakeTime: "07:00",
+          activities: [
+            {
+              time: "22:00",
+              activity: "No screen time",
+              duration: 60,
+            },
+            {
+              time: "22:30",
+              activity: "Reading/Meditation",
+              duration: 30,
+            },
+          ],
+          meetings: [
+            {
+              id: "1",
+              title: "Sleep Review",
+              startTime: "22:00",
+              endTime: "22:30",
+              isOnline: true,
+              participants: ["user", "sleep-coach"],
+            },
+          ],
+        },
+        delay: 1500,
+      },
+      {
+        text: "This is a suggested schedule. How does this align with your current routine?",
+        delay: 2000,
+      },
+    ],
+  },
+  MEDITATION: {
+    responses: [
+      {
+        text: "Let's do a quick breathing exercise together. Find a comfortable position and let me guide you.",
+        delay: 1000,
+      },
+      {
+        text: "Close your eyes and take a deep breath in through your nose for 4 counts...",
+        delay: 3000,
+      },
+      {
+        text: "Now hold for 4 counts...",
+        delay: 7000,
+      },
+      {
+        text: "And slowly exhale through your mouth for 6 counts...",
+        delay: 11000,
+      },
+      {
+        text: "How do you feel? Would you like to continue with a longer meditation session?",
+        delay: 13000,
+      },
+    ],
+  },
+  THERAPIST: {
+    responses: [
+      {
+        text: "I understand presentations can be nerve-wracking. Let's break this down - what specific aspects of the presentation are making you feel anxious?",
+        delay: 1500,
+      },
+      {
+        text: "That's a common concern. Have you prepared any strategies to help you remember your key points? We could work on some memory techniques and confidence-building exercises together.",
+        delay: 2000,
+      },
+      {
+        text: "Here's a quick grounding exercise we can try: Take 3 deep breaths, and on each exhale, remind yourself of one thing you know really well about your presentation topic.",
+        delay: 3000,
+      },
+    ],
+  },
 };
 
 interface ChatModeConfig {
@@ -148,17 +438,6 @@ const modeConfig: Record<string, ChatModeConfig> = {
     color: modeColors.MEDITATION.main,
   },
 };
-
-interface Message {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: Date;
-  workoutTemplate?: WorkoutTemplate;
-  productCollection?: ProductCollection;
-  daySchedule?: DaySchedule;
-  image?: string;
-}
 
 // Add type for Feather icon names
 type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
@@ -321,8 +600,9 @@ export const ChatScreen = () => {
     );
   };
 
-  // Reset messages when mode changes
+  // Reset conversation steps when mode changes
   useEffect(() => {
+    conversationSteps[selectedMode.name] = 0;
     setMessages([
       {
         id: "1",
@@ -358,121 +638,43 @@ export const ChatScreen = () => {
     // Show typing indicator
     setIsTyping(true);
 
-    // Special handling for trainer mode
-    if (selectedMode.name === "TRAINER") {
-      const coachResponse = handleCoachMessage(text);
-      if (coachResponse) {
-        setTimeout(() => {
-          const response: Message = {
-            id: (Date.now() + 1).toString(),
-            text:
-              coachResponse.type === "message"
-                ? (coachResponse.content as string)
-                : "WORKOUT_TEMPLATE",
-            isUser: false,
-            timestamp: new Date(),
-            workoutTemplate:
-              coachResponse.type === "workout"
-                ? (coachResponse.content as WorkoutTemplate)
-                : undefined,
-          };
-          setMessages((prev) => [...prev, response]);
-          setIsTyping(false);
-          scrollToBottom();
-        }, 1000);
-        return;
-      }
-    }
+    // Get next response in the flow
+    const currentStep = conversationSteps[selectedMode.name];
+    const flow = mockFlows[selectedMode.name];
 
-    // Special handling for nutritionist mode
-    if (selectedMode.name === "NUTRITIONIST") {
-      const shopperResponse = handleShopperMessage(text);
-      if (shopperResponse) {
-        setTimeout(() => {
-          const response: Message = {
-            id: (Date.now() + 1).toString(),
-            text:
-              shopperResponse.type === "message"
-                ? (shopperResponse.content as string)
-                : "PRODUCT_COLLECTION",
-            isUser: false,
-            timestamp: new Date(),
-            productCollection:
-              shopperResponse.type === "products"
-                ? (shopperResponse.content as ProductCollection)
-                : undefined,
-          };
-          setMessages((prev) => [...prev, response]);
-          setIsTyping(false);
-          scrollToBottom();
-        }, 1000);
-        return;
-      }
-    }
-
-    // Special handling for sleep mode
-    if (selectedMode.name === "SLEEP") {
-      const managerResponse = handleManagerMessage(text);
-      if (managerResponse) {
-        setTimeout(() => {
-          const response: Message = {
-            id: (Date.now() + 1).toString(),
-            text:
-              managerResponse.type === "message"
-                ? (managerResponse.content as string)
-                : "CALENDAR_VIEW",
-            isUser: false,
-            timestamp: new Date(),
-            daySchedule:
-              managerResponse.type === "calendar"
-                ? (managerResponse.content as DaySchedule)
-                : undefined,
-          };
-          setMessages((prev) => [...prev, response]);
-          setIsTyping(false);
-          scrollToBottom();
-        }, 1000);
-        return;
-      }
-    }
-
-    try {
-      // Convert messages to OpenAI format
-      const openAIMessages: OpenAIMessage[] = messages.map((msg) => ({
-        role: msg.isUser ? "user" : "assistant",
-        content: msg.text,
-      }));
-
-      // Add the new message
-      openAIMessages.push({
-        role: "user",
-        content: text.trim(),
-      });
-
-      // Get response from OpenAI
-      const response = await sendMessage(openAIMessages, selectedMode.name);
+    if (currentStep < flow.responses.length) {
+      const response = flow.responses[currentStep];
+      await new Promise((resolve) =>
+        setTimeout(resolve, response.delay || 1000)
+      );
 
       const zoeyResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: response,
+        id: Date.now().toString(),
+        text: response.text,
         isUser: false,
         timestamp: new Date(),
+        workoutTemplate: response.workoutTemplate,
+        productCollection: response.productCollection,
+        daySchedule: response.daySchedule,
       };
 
       setMessages((prev) => [...prev, zoeyResponse]);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: "Sorry, I encountered an error. Please try again.",
+      conversationSteps[selectedMode.name]++;
+    } else {
+      // Reset the conversation if we've reached the end
+      conversationSteps[selectedMode.name] = 0;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const defaultResponse: Message = {
+        id: Date.now().toString(),
+        text: "Let's start a new conversation. How can I help you today?",
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsTyping(false);
-      scrollToBottom();
+      setMessages((prev) => [...prev, defaultResponse]);
     }
+
+    setIsTyping(false);
+    scrollToBottom();
   };
 
   useEffect(() => {
