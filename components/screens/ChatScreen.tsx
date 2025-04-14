@@ -80,6 +80,32 @@ interface Meeting {
   participants: string[];
 }
 
+interface MedicationSchedule {
+  medications: {
+    name: string;
+    dosage: string;
+    time: string;
+    frequency: string;
+    withFood: boolean;
+  }[];
+}
+
+interface NutritionLog {
+  mealType: string;
+  timestamp: string;
+  calories: number;
+  macros: {
+    protein: number;
+    carbs: number;
+    fats: number;
+    fiber: number;
+  };
+  micronutrients: {
+    name: string;
+    amount: string;
+  }[];
+}
+
 interface Message {
   id: string;
   text: string;
@@ -88,6 +114,8 @@ interface Message {
   workoutTemplate?: WorkoutTemplate;
   productCollection?: ProductCollection;
   daySchedule?: DaySchedule;
+  medicationSchedule?: MedicationSchedule;
+  nutritionLog?: NutritionLog;
   image?: string;
 }
 
@@ -97,6 +125,8 @@ interface SimulatedResponse {
   workoutTemplate?: WorkoutTemplate;
   productCollection?: ProductCollection;
   daySchedule?: DaySchedule;
+  medicationSchedule?: MedicationSchedule;
+  nutritionLog?: NutritionLog;
 }
 
 interface SimulatedFlow {
@@ -176,57 +206,67 @@ const mockFlows: Record<ChatMode, SimulatedFlow> = {
         text: "Perfect! Let's continue with the current dosage. Remember to take it at the same time tomorrow. Would you like me to set a reminder for you?",
         delay: 2000,
       },
+      {
+        text: "Here's your updated medication schedule:",
+        delay: 2000,
+        medicationSchedule: {
+          medications: [
+            {
+              name: "Cetirizine",
+              dosage: "10mg",
+              time: "20:00",
+              frequency: "Daily",
+              withFood: true,
+            },
+            {
+              name: "Vitamin D3",
+              dosage: "2000 IU",
+              time: "08:00",
+              frequency: "Daily",
+              withFood: true,
+            },
+            {
+              name: "Omega-3",
+              dosage: "1000mg",
+              time: "13:00",
+              frequency: "Daily",
+              withFood: true,
+            },
+          ],
+        },
+      },
     ],
   },
   NUTRITIONIST: {
     responses: [
       {
-        text: "Based on your fitness goals and the fact that you usually workout in the mornings, I'd recommend a protein-rich breakfast. How about:",
+        text: "That looks like a healthy and balanced snack choice! Let me analyze the nutritional content for you.",
         delay: 1000,
       },
       {
-        text: "PRODUCT_COLLECTION",
-        productCollection: {
-          title: "Healthy Breakfast Options",
-          products: [
-            {
-              id: "1",
-              name: "Greek Yogurt Parfait",
-              description: "Greek yogurt, granola, berries, and honey",
-              image: require("../../assets/images/gifts/candle.png"),
-              price: 8.99,
-              rating: 4.8,
-              reviews: 128,
-              isPrime: true,
-              nutrition: {
-                calories: 320,
-                protein: "20g",
-                carbs: "40g",
-                fats: "10g",
-              },
-            },
-            {
-              id: "2",
-              name: "Protein Oatmeal",
-              description: "Oats, protein powder, banana, and almonds",
-              image: require("../../assets/images/gifts/candle.png"),
-              price: 7.99,
-              rating: 4.7,
-              reviews: 95,
-              isPrime: true,
-              nutrition: {
-                calories: 380,
-                protein: "25g",
-                carbs: "45g",
-                fats: "12g",
-              },
-            },
+        text: "Here's the nutritional breakdown of your snack:",
+        delay: 1500,
+        nutritionLog: {
+          mealType: "Afternoon Snack",
+          timestamp: new Date().toLocaleTimeString(),
+          calories: 185,
+          macros: {
+            protein: 8,
+            carbs: 22,
+            fats: 6,
+            fiber: 4,
+          },
+          micronutrients: [
+            { name: "Vitamin A", amount: "120mcg" },
+            { name: "Vitamin C", amount: "15mg" },
+            { name: "Calcium", amount: "80mg" },
+            { name: "Iron", amount: "1.2mg" },
+            { name: "Potassium", amount: "250mg" },
           ],
         },
-        delay: 1500,
       },
       {
-        text: "These options provide a good balance of protein and complex carbs. Would you like me to suggest some pre-workout snacks as well?",
+        text: "This is a great choice for a snack! The combination of protein and fiber will help keep you satisfied. Would you like some suggestions for your next meal?",
         delay: 2000,
       },
     ],
@@ -402,6 +442,140 @@ const modeConfig: Record<string, ChatModeConfig> = {
 
 // Add type for Feather icon names
 type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+
+const MedicationScheduleCard: React.FC<{
+  schedule: MedicationSchedule;
+  currentTheme: ThemeColors;
+}> = ({ schedule, currentTheme }) => (
+  <StyledView className="bg-white border-2 border-black rounded-xl overflow-hidden">
+    <StyledView
+      className="px-3 py-2 border-b-2 border-black"
+      style={{ backgroundColor: currentTheme.main }}
+    >
+      <StyledText className="font-space text-base font-bold">
+        💊 Medication Schedule
+      </StyledText>
+    </StyledView>
+
+    <StyledView className="p-4">
+      {schedule.medications.map((med, index) => (
+        <StyledView
+          key={index}
+          className="flex-row items-center py-3 border-b border-gray-200 last:border-b-0"
+        >
+          <StyledView className="w-24">
+            <StyledText className="font-space text-sm font-bold">
+              {med.time}
+            </StyledText>
+          </StyledView>
+
+          <StyledView className="flex-1">
+            <StyledText className="font-space font-bold">{med.name}</StyledText>
+            <StyledText className="font-space text-sm text-gray-600">
+              {med.dosage} • {med.frequency}
+            </StyledText>
+            {med.withFood && (
+              <StyledView className="flex-row items-center mt-1">
+                <Feather
+                  name="coffee"
+                  size={12}
+                  color="#666"
+                  style={{ marginRight: 4 }}
+                />
+                <StyledText className="font-space text-xs text-gray-500">
+                  Take with food
+                </StyledText>
+              </StyledView>
+            )}
+          </StyledView>
+        </StyledView>
+      ))}
+    </StyledView>
+  </StyledView>
+);
+
+const NutritionLogCard: React.FC<{
+  log: NutritionLog;
+  currentTheme: ThemeColors;
+}> = ({ log, currentTheme }) => (
+  <StyledView className="bg-white border-2 border-black rounded-xl overflow-hidden">
+    <StyledView
+      className="px-3 py-2 border-b-2 border-black"
+      style={{ backgroundColor: currentTheme.main }}
+    >
+      <StyledText className="font-space text-base font-bold">
+        🍎 Nutrition Log - {log.mealType}
+      </StyledText>
+    </StyledView>
+
+    <StyledView className="p-4">
+      {/* Calories */}
+      <StyledView className="mb-4">
+        <StyledText className="font-space text-2xl font-bold">
+          {log.calories} kcal
+        </StyledText>
+        <StyledText className="font-space text-sm text-gray-600">
+          {log.timestamp}
+        </StyledText>
+      </StyledView>
+
+      {/* Macros */}
+      <StyledView className="flex-row justify-between mb-4">
+        <StyledView className="items-center">
+          <StyledText className="font-space text-sm text-gray-600">
+            Protein
+          </StyledText>
+          <StyledText className="font-space font-bold">
+            {log.macros.protein}g
+          </StyledText>
+        </StyledView>
+        <StyledView className="items-center">
+          <StyledText className="font-space text-sm text-gray-600">
+            Carbs
+          </StyledText>
+          <StyledText className="font-space font-bold">
+            {log.macros.carbs}g
+          </StyledText>
+        </StyledView>
+        <StyledView className="items-center">
+          <StyledText className="font-space text-sm text-gray-600">
+            Fats
+          </StyledText>
+          <StyledText className="font-space font-bold">
+            {log.macros.fats}g
+          </StyledText>
+        </StyledView>
+        <StyledView className="items-center">
+          <StyledText className="font-space text-sm text-gray-600">
+            Fiber
+          </StyledText>
+          <StyledText className="font-space font-bold">
+            {log.macros.fiber}g
+          </StyledText>
+        </StyledView>
+      </StyledView>
+
+      {/* Micronutrients */}
+      <StyledView>
+        <StyledText className="font-space font-bold mb-2">
+          Micronutrients
+        </StyledText>
+        <StyledView className="flex-row flex-wrap">
+          {log.micronutrients.map((micro, index) => (
+            <StyledView
+              key={index}
+              className="bg-gray-100 rounded-full px-3 py-1 mr-2 mb-2"
+            >
+              <StyledText className="font-space text-xs">
+                {micro.name}: {micro.amount}
+              </StyledText>
+            </StyledView>
+          ))}
+        </StyledView>
+      </StyledView>
+    </StyledView>
+  </StyledView>
+);
 
 export const ChatScreen = () => {
   const { selectedMode, setSelectedMode, currentTheme } = useTheme();
@@ -617,6 +791,8 @@ export const ChatScreen = () => {
         workoutTemplate: response.workoutTemplate,
         productCollection: response.productCollection,
         daySchedule: response.daySchedule,
+        medicationSchedule: response.medicationSchedule,
+        nutritionLog: response.nutritionLog,
       };
 
       setMessages((prev) => [...prev, zoeyResponse]);
@@ -664,6 +840,8 @@ export const ChatScreen = () => {
         workoutTemplate: response.workoutTemplate,
         productCollection: response.productCollection,
         daySchedule: response.daySchedule,
+        medicationSchedule: response.medicationSchedule,
+        nutritionLog: response.nutritionLog,
       };
 
       setMessages((prev) => [...prev, zoeyResponse]);
@@ -850,6 +1028,28 @@ export const ChatScreen = () => {
         <StyledView key={message.id} className="mb-4">
           <CalendarView
             schedule={message.daySchedule}
+            currentTheme={currentTheme}
+          />
+        </StyledView>
+      );
+    }
+
+    if (!message.isUser && message.medicationSchedule) {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <MedicationScheduleCard
+            schedule={message.medicationSchedule}
+            currentTheme={currentTheme}
+          />
+        </StyledView>
+      );
+    }
+
+    if (!message.isUser && message.nutritionLog) {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <NutritionLogCard
+            log={message.nutritionLog}
             currentTheme={currentTheme}
           />
         </StyledView>
