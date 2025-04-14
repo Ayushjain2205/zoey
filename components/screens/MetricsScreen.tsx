@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Dimensions,
+  Image,
+} from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -12,6 +19,7 @@ const StyledText = styled(Text);
 const StyledScrollView = styled(ScrollView);
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledPressable = styled(Pressable);
+const StyledImage = styled(Image);
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -31,6 +39,11 @@ type Metric = {
     M: { labels: string[]; values: number[] };
     Y: { labels: string[]; values: number[] };
   };
+};
+
+type InsightTip = {
+  tip: string;
+  icon: keyof typeof Feather.glyphMap;
 };
 
 export const MetricsScreen = () => {
@@ -178,6 +191,33 @@ export const MetricsScreen = () => {
     },
   ];
 
+  const getMetricInsight = (metric: Metric): InsightTip | null => {
+    switch (metric.id) {
+      case "steps":
+        return {
+          tip: "Try 5-minute walks every hour!",
+          icon: "clock",
+        };
+      case "distance":
+        return {
+          tip: "A quick walk around the block adds 0.5km",
+          icon: "navigation",
+        };
+      case "sessions":
+        return {
+          tip: "Perfect time for an evening walk",
+          icon: "sun",
+        };
+      case "calories":
+        return {
+          tip: "153 kcal left to reach your goal",
+          icon: "activity",
+        };
+      default:
+        return null;
+    }
+  };
+
   const renderMetricCard = (metric: any) => {
     const data = {
       labels: metric.data.D.labels,
@@ -187,7 +227,7 @@ export const MetricsScreen = () => {
     return (
       <StyledPressable
         onPress={() => setSelectedMetric(metric.id)}
-        className="bg-white border-2 border-black rounded-3xl p-4 mb-4 w-[48%] h-44 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
+        className="bg-white border-2 border-black rounded-3xl p-4 mb-4 w-[48%] aspect-square shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px]"
       >
         <StyledView className="flex-row justify-between items-center">
           <StyledText className="font-space text-lg">{metric.title}</StyledText>
@@ -200,14 +240,6 @@ export const MetricsScreen = () => {
           {metric.value}
           <StyledText className="text-xl"> {metric.unit}</StyledText>
         </StyledText>
-        {metric.label && (
-          <StyledView className="flex-row items-center">
-            <Feather name={metric.icon} size={16} color={metric.color} />
-            <StyledText className="font-space text-sm ml-1">
-              {metric.label}
-            </StyledText>
-          </StyledView>
-        )}
         <StyledView className="flex-1 justify-end">
           <LineChart
             data={data}
@@ -285,6 +317,7 @@ export const MetricsScreen = () => {
       labels: metric.data[selectedTimeframe].labels,
       datasets: [{ data: metric.data[selectedTimeframe].values }],
     };
+    const insight = getMetricInsight(metric);
 
     return (
       <>
@@ -349,6 +382,37 @@ export const MetricsScreen = () => {
             withOuterLines={false}
             withDots={true}
           />
+
+          {insight && (
+            <StyledView className="bg-white border-2 border-black rounded-3xl p-5 mt-6 mx-[-12px] shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+              <StyledView className="flex-row items-start">
+                <StyledView className="w-16 h-16 rounded-full overflow-hidden border-2 border-black bg-[#FFE4D6]">
+                  <StyledImage
+                    source={require("../../assets/images/zoey/zoey_trainer.png")}
+                    className="w-full h-full"
+                    resizeMode="contain"
+                  />
+                </StyledView>
+                <StyledView className="flex-1 ml-4">
+                  <StyledText
+                    className="font-space text-lg"
+                    style={{ color: metric.color }}
+                  >
+                    {insight.tip}
+                  </StyledText>
+                  <StyledText className="font-space text-sm text-gray-500 mt-1">
+                    {metric.id === "steps"
+                      ? "Small walks add up throughout the day"
+                      : metric.id === "distance"
+                      ? "Every bit of movement counts towards your goal"
+                      : metric.id === "sessions"
+                      ? "Regular activity improves your overall health"
+                      : "Stay active to reach your daily target"}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+            </StyledView>
+          )}
         </StyledScrollView>
       </>
     );
