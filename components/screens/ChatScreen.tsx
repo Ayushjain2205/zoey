@@ -117,32 +117,32 @@ interface ChatModeConfig {
 const modeConfig: Record<string, ChatModeConfig> = {
   DOCTOR: {
     name: "DOCTOR",
-    image: require("../../assets/images/zoey_doctor.png"),
+    image: require("../../assets/images/zoey/zoey_doctor.png"),
     color: modeColors.DOCTOR.main,
   },
   NUTRITIONIST: {
     name: "NUTRITIONIST",
-    image: require("../../assets/images/zoey_nutritionist.png"),
+    image: require("../../assets/images/zoey/zoey_nutritionist.png"),
     color: modeColors.NUTRITIONIST.main,
   },
   THERAPIST: {
     name: "THERAPIST",
-    image: require("../../assets/images/zoey_therapist.png"),
+    image: require("../../assets/images/zoey/zoey_therapist.png"),
     color: modeColors.THERAPIST.main,
   },
   TRAINER: {
     name: "TRAINER",
-    image: require("../../assets/images/zoey_trainer.png"),
+    image: require("../../assets/images/zoey/zoey_trainer.png"),
     color: modeColors.TRAINER.main,
   },
   SLEEP: {
     name: "SLEEP",
-    image: require("../../assets/images/zoey_sleep.png"),
+    image: require("../../assets/images/zoey/zoey_sleep.png"),
     color: modeColors.SLEEP.main,
   },
   MEDITATION: {
     name: "MEDITATION",
-    image: require("../../assets/images/zoey_meditation.png"),
+    image: require("../../assets/images/zoey/zoey_meditation.png"),
     color: modeColors.MEDITATION.main,
   },
 };

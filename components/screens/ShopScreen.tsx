@@ -16,7 +16,7 @@ const StyledImage = styled(Image);
 const StyledScrollView = styled(ScrollView);
 const StyledModal = styled(Modal);
 
-type Category = "abilities" | "gifts" | "boosts";
+type Category = "packs" | "gifts" | "boosts";
 
 interface ShopItem {
   name: string;
@@ -26,54 +26,54 @@ interface ShopItem {
 
 const gifts: ShopItem[] = [
   {
-    name: "Friendship Bracelet",
+    name: "Aroma Diffuser",
     price: 100,
-    image: require("../../assets/images/bracelet.png"),
+    image: require("../../assets/images/gifts/aroma-diffuser.png"),
   },
   {
-    name: "Crown of Excellence",
+    name: "Meditation Candle",
     price: 200,
-    image: require("../../assets/images/crown.png"),
+    image: require("../../assets/images/gifts/candle.png"),
   },
   {
-    name: "Dream Catcher",
+    name: "Fitness Band",
     price: 300,
-    image: require("../../assets/images/dreamcatcher.png"),
+    image: require("../../assets/images/gifts/fitness-band.png"),
   },
   {
-    name: "Hat of Empathy",
+    name: "Herbal Tea",
     price: 400,
-    image: require("../../assets/images/hat.png"),
+    image: require("../../assets/images/gifts/herbal-tea.png"),
   },
   {
-    name: "Hoodie",
+    name: "Sleep Lamp",
     price: 500,
-    image: require("../../assets/images/hoodie.png"),
+    image: require("../../assets/images/gifts/sleep-lamp.png"),
   },
   {
-    name: "Locket of Love",
+    name: "Sleep Mask",
     price: 600,
-    image: require("../../assets/images/locket.png"),
+    image: require("../../assets/images/gifts/sleep-mask.png"),
   },
   {
-    name: "Enchanted Mirror",
+    name: "Vitamin Pack",
     price: 700,
-    image: require("../../assets/images/mirror.png"),
+    image: require("../../assets/images/gifts/vitamin-pack.png"),
   },
   {
-    name: "Makeup Box",
+    name: "Water Bottle",
     price: 800,
-    image: require("../../assets/images/makeupbox.png"),
+    image: require("../../assets/images/gifts/water-bottle.png"),
   },
   {
-    name: "Ring of Friendship",
+    name: "Weighted Blanket",
     price: 900,
-    image: require("../../assets/images/ring.png"),
+    image: require("../../assets/images/gifts/weighted-blanket.png"),
   },
   {
-    name: "Sunglasses",
+    name: "Wellness Journal",
     price: 1000,
-    image: require("../../assets/images/sunglasses.png"),
+    image: require("../../assets/images/gifts/wellness-journal.png"),
   },
 ];
 
@@ -81,53 +81,62 @@ const boosts: ShopItem[] = [
   {
     name: "1-Day Boost",
     price: 100,
-    image: require("../../assets/images/bronze-rocket.png"),
+    image: require("../../assets/images/boosts/bronze-rocket.png"),
   },
   {
     name: "3-Day Boost",
     price: 250,
-    image: require("../../assets/images/silver-rocket.png"),
+    image: require("../../assets/images/boosts/silver-rocket.png"),
   },
   {
     name: "5-Day Boost",
     price: 400,
-    image: require("../../assets/images/gold-rocket.png"),
+    image: require("../../assets/images/boosts/gold-rocket.png"),
   },
   {
     name: "7-Day Boost",
     price: 500,
-    image: require("../../assets/images/diamond-rocket.png"),
+    image: require("../../assets/images/boosts/diamond-rocket.png"),
   },
 ];
 
-const abilities: ShopItem[] = [
+const packs: ShopItem[] = [
   {
-    name: "Novice Pack",
+    name: "Clean Fuel Pack",
     price: 500,
-    image: require("../../assets/images/ability1.png"),
+    image: require("../../assets/images/packs/clean-fuel-pack.png"),
   },
   {
-    name: "Adept Bundle",
+    name: "Energy Boost Pack",
     price: 1000,
-    image: require("../../assets/images/ability2.png"),
+    image: require("../../assets/images/packs/energy-boost-pack.png"),
   },
   {
-    name: "Master's Cache",
+    name: "Focus Pack",
     price: 2000,
-    image: require("../../assets/images/ability3.png"),
+    image: require("../../assets/images/packs/focus-pack.png"),
   },
   {
-    name: "Ultimate Upgrade",
+    name: "Optimizer Pack",
     price: 5000,
-    image: require("../../assets/images/ability4.png"),
+    image: require("../../assets/images/packs/optimizer-pack.png"),
+  },
+  {
+    name: "Wellness Pack",
+    price: 10000,
+    image: require("../../assets/images/packs/wellness-pack.png"),
+  },
+  {
+    name: "Zen Mode Pack",
+    price: 15000,
+    image: require("../../assets/images/packs/zen-mode-pack.png"),
   },
 ];
 
 export const ShopScreen = () => {
   const { currentTheme } = useTheme();
   const { coins, spendCoins } = useCoins();
-  const [selectedCategory, setSelectedCategory] =
-    useState<Category>("abilities");
+  const [selectedCategory, setSelectedCategory] = useState<Category>("gifts");
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
   const [showInsufficientCoins, setShowInsufficientCoins] = useState(false);
 
@@ -229,8 +238,8 @@ export const ShopScreen = () => {
 
   const getItemsForCategory = () => {
     switch (selectedCategory) {
-      case "abilities":
-        return abilities;
+      case "packs":
+        return packs;
       case "gifts":
         return gifts;
       case "boosts":
@@ -275,7 +284,7 @@ export const ShopScreen = () => {
         {/* Category Tabs */}
         <StyledView className="flex-row mb-4">
           {[
-            { id: "abilities", label: "Abilities" },
+            { id: "packs", label: "Packs" },
             { id: "gifts", label: "Gifts" },
             { id: "boosts", label: "Boosts" },
           ].map((category) => (

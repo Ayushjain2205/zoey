@@ -6,12 +6,12 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 
 const images = [
-  require("../../assets/images/zoey_doctor.png"),
-  require("../../assets/images/zoey_meditation.png"),
-  require("../../assets/images/zoey_therapist.png"),
-  require("../../assets/images/zoey_sleep.png"),
-  require("../../assets/images/zoey_nutritionist.png"),
-  require("../../assets/images/zoey_trainer.png"),
+  require("../../assets/images/zoey/zoey_doctor.png"),
+  require("../../assets/images/zoey/zoey_meditation.png"),
+  require("../../assets/images/zoey/zoey_therapist.png"),
+  require("../../assets/images/zoey/zoey_sleep.png"),
+  require("../../assets/images/zoey/zoey_nutritionist.png"),
+  require("../../assets/images/zoey/zoey_trainer.png"),
 ];
 
 export default function SplashScreen() {
