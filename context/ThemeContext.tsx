@@ -28,13 +28,13 @@ export const modeColors: Record<string, ThemeColors> = {
     lighter: "#F5FFF7",
     dark: "#7AFF8F",
   },
-  THERAPIST: {
+  TRAINER: {
     main: "#E0B3FF",
     light: "#F0E5FF",
     lighter: "#F8F5FF",
     dark: "#B366FF",
   },
-  TRAINER: {
+  THERAPIST: {
     main: "#FFB3BA",
     light: "#FFE5E8",
     lighter: "#FFF5F7",
