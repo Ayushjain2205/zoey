@@ -33,11 +33,11 @@ export const UserScreen = () => {
     },
     {
       id: 2,
-      title: "Complete a wellness session",
+      title: "Complete a meditation session",
       coins: 75,
       completed: false,
     },
-    { id: 3, title: "Save a memory", coins: 25, completed: true },
+    { id: 3, title: "Upload a meal photo", coins: 25, completed: true },
   ]);
 
   const [isExpanded, setIsExpanded] = useState(false);
