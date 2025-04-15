@@ -13,6 +13,7 @@ import {
   Animated,
   Easing,
   ActionSheetIOS,
+  GestureResponderEvent,
 } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -106,6 +107,14 @@ interface NutritionLog {
   }[];
 }
 
+interface GuidedMeditation {
+  duration: number;
+  currentTime: number;
+  title: string;
+  phase: "intro" | "breathing" | "body" | "mind" | "closing";
+  isPlaying: boolean;
+}
+
 interface Message {
   id: string;
   text: string;
@@ -116,6 +125,7 @@ interface Message {
   daySchedule?: DaySchedule;
   medicationSchedule?: MedicationSchedule;
   nutritionLog?: NutritionLog;
+  guidedMeditation?: GuidedMeditation;
   image?: string;
 }
 
@@ -127,6 +137,7 @@ interface SimulatedResponse {
   daySchedule?: DaySchedule;
   medicationSchedule?: MedicationSchedule;
   nutritionLog?: NutritionLog;
+  guidedMeditation?: GuidedMeditation;
 }
 
 interface SimulatedFlow {
@@ -362,24 +373,23 @@ const mockFlows: Record<ChatMode, SimulatedFlow> = {
   MEDITATION: {
     responses: [
       {
-        text: "Let's do a quick breathing exercise together. Find a comfortable position and let me guide you.",
+        text: "I'll guide you through a calming meditation session. Find a comfortable position and let's begin when you're ready.",
         delay: 1000,
       },
       {
-        text: "Close your eyes and take a deep breath in through your nose for 4 counts...",
-        delay: 3000,
+        text: "Starting your guided meditation session:",
+        delay: 1500,
+        guidedMeditation: {
+          duration: 600, // 10 minutes in seconds
+          currentTime: 30,
+          title: "Mindful Relaxation",
+          phase: "breathing",
+          isPlaying: true,
+        },
       },
       {
-        text: "Now hold for 4 counts...",
-        delay: 7000,
-      },
-      {
-        text: "And slowly exhale through your mouth for 6 counts...",
-        delay: 11000,
-      },
-      {
-        text: "How do you feel? Would you like to continue with a longer meditation session?",
-        delay: 13000,
+        text: "How do you feel? Would you like to try another meditation or perhaps a different mindfulness exercise?",
+        delay: 2000,
       },
     ],
   },
@@ -576,6 +586,183 @@ const NutritionLogCard: React.FC<{
     </StyledView>
   </StyledView>
 );
+
+const GuidedMeditationCard: React.FC<{
+  meditation: GuidedMeditation;
+  currentTheme: ThemeColors;
+}> = ({ meditation: initialMeditation, currentTheme }) => {
+  const [meditation, setMeditation] = useState({
+    ...initialMeditation,
+    currentTime: 0,
+    isPlaying: false,
+  });
+  const [wavePoints, setWavePoints] = useState(
+    Array.from({ length: 40 }, () => Math.random() * 0.8 + 0.2)
+  );
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const waveAnimationRef = useRef<NodeJS.Timeout | null>(null);
+  const progressBarRef = useRef<View>(null);
+  const [progressBarWidth, setProgressBarWidth] = useState(0);
+
+  // Handle play/pause
+  const togglePlayPause = () => {
+    setMeditation((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
+  };
+
+  // Handle seek
+  const handleSeek = (event: GestureResponderEvent) => {
+    if (!progressBarRef.current) return;
+
+    progressBarRef.current.measure((x, y, width, height, pageX, pageY) => {
+      const touchX = event.nativeEvent.pageX - pageX;
+      const percentage = Math.max(0, Math.min(1, touchX / width));
+      const newTime = Math.round(percentage * meditation.duration);
+      setMeditation((prev) => ({ ...prev, currentTime: newTime }));
+    });
+  };
+
+  // Timer effect
+  useEffect(() => {
+    if (meditation.isPlaying && meditation.currentTime < meditation.duration) {
+      timerRef.current = setInterval(() => {
+        setMeditation((prev) => {
+          const newTime = prev.currentTime + 1;
+          if (newTime >= prev.duration) {
+            clearInterval(timerRef.current!);
+            return { ...prev, currentTime: prev.duration, isPlaying: false };
+          }
+          return { ...prev, currentTime: newTime };
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [meditation.isPlaying]);
+
+  // Wave animation effect
+  useEffect(() => {
+    if (meditation.isPlaying) {
+      waveAnimationRef.current = setInterval(() => {
+        setWavePoints(
+          Array.from({ length: 40 }, () => Math.random() * 0.8 + 0.2)
+        );
+      }, 200);
+    }
+
+    return () => {
+      if (waveAnimationRef.current) {
+        clearInterval(waveAnimationRef.current);
+      }
+    };
+  }, [meditation.isPlaying]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <StyledView className="bg-white border-2 border-black rounded-xl overflow-hidden">
+      <StyledView
+        className="px-3 py-2 border-b-2 border-black"
+        style={{ backgroundColor: currentTheme.main }}
+      >
+        <StyledText className="font-space text-base font-bold">
+          🧘‍♀️ Guided Meditation
+        </StyledText>
+      </StyledView>
+
+      <StyledView className="p-4">
+        {/* Title and Phase */}
+        <StyledView className="items-center mb-6">
+          <StyledText className="font-space text-2xl font-bold mb-2">
+            {meditation.title}
+          </StyledText>
+          <StyledText className="font-space text-sm text-gray-600 capitalize">
+            {meditation.phase} Phase
+          </StyledText>
+        </StyledView>
+
+        {/* Audio Wave Visualization */}
+        <StyledView className="h-24 flex-row items-center justify-center space-x-1 mb-6">
+          {wavePoints.map((height, index) => (
+            <Animated.View
+              key={index}
+              style={{
+                width: 4,
+                height: `${height * 100}%`,
+                backgroundColor: meditation.isPlaying
+                  ? currentTheme.main
+                  : "#E5E5E5",
+                opacity: meditation.isPlaying ? 1 : 0.5,
+                borderRadius: 2,
+              }}
+            />
+          ))}
+        </StyledView>
+
+        {/* Progress Bar */}
+        <StyledPressable
+          onLayout={(event) =>
+            setProgressBarWidth(event.nativeEvent.layout.width)
+          }
+          onStartShouldSetResponder={() => true}
+          onResponderGrant={handleSeek}
+          onResponderMove={handleSeek}
+          className="mb-4"
+        >
+          <StyledView
+            ref={progressBarRef}
+            className="h-2 bg-gray-200 rounded-full overflow-hidden"
+          >
+            <StyledView
+              className="h-full rounded-full"
+              style={{
+                width: `${
+                  (meditation.currentTime / meditation.duration) * 100
+                }%`,
+                backgroundColor: currentTheme.main,
+              }}
+            />
+          </StyledView>
+        </StyledPressable>
+
+        {/* Time */}
+        <StyledView className="flex-row justify-between mb-6">
+          <StyledText className="font-space text-sm text-gray-600">
+            {formatTime(meditation.currentTime)}
+          </StyledText>
+          <StyledText className="font-space text-sm text-gray-600">
+            {formatTime(meditation.duration)}
+          </StyledText>
+        </StyledView>
+
+        {/* Controls */}
+        <StyledPressable
+          onPress={togglePlayPause}
+          className="flex-row justify-center space-x-4"
+        >
+          <StyledView
+            className="w-12 h-12 rounded-full border-2 border-black items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px]"
+            style={{ backgroundColor: currentTheme.main }}
+          >
+            <Feather
+              name={meditation.isPlaying ? "pause" : "play"}
+              size={24}
+              color="black"
+            />
+          </StyledView>
+        </StyledPressable>
+      </StyledView>
+    </StyledView>
+  );
+};
 
 export const ChatScreen = () => {
   const { selectedMode, setSelectedMode, currentTheme } = useTheme();
@@ -793,6 +980,7 @@ export const ChatScreen = () => {
         daySchedule: response.daySchedule,
         medicationSchedule: response.medicationSchedule,
         nutritionLog: response.nutritionLog,
+        guidedMeditation: response.guidedMeditation,
       };
 
       setMessages((prev) => [...prev, zoeyResponse]);
@@ -842,6 +1030,7 @@ export const ChatScreen = () => {
         daySchedule: response.daySchedule,
         medicationSchedule: response.medicationSchedule,
         nutritionLog: response.nutritionLog,
+        guidedMeditation: response.guidedMeditation,
       };
 
       setMessages((prev) => [...prev, zoeyResponse]);
@@ -1050,6 +1239,17 @@ export const ChatScreen = () => {
         <StyledView key={message.id} className="mb-4">
           <NutritionLogCard
             log={message.nutritionLog}
+            currentTheme={currentTheme}
+          />
+        </StyledView>
+      );
+    }
+
+    if (!message.isUser && message.guidedMeditation) {
+      return (
+        <StyledView key={message.id} className="mb-4">
+          <GuidedMeditationCard
+            meditation={message.guidedMeditation}
             currentTheme={currentTheme}
           />
         </StyledView>
